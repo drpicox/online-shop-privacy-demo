@@ -4,12 +4,12 @@
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { products } from '@/lib/data';
-import { useCart } from '@/contexts/CartContext';
 import { Review } from '@/types';
 import Navbar from '@/components/Navbar';
 import StarRating from '@/components/StarRating';
 import {useAppDispatch, useAppSelector} from '@/store';
 import {addToWishlist, removeFromWishlist, selectIsInWishlist} from "@/store/wishlistSlice";
+import {addToCart} from "@/store/cartSlice";
 
 export default function ProductDetailPage() {
     // Get productId from Redux navigation state
@@ -18,8 +18,6 @@ export default function ProductDetailPage() {
     const productId = Number(params.id);
     const liked = useAppSelector(state => selectIsInWishlist(state, productId));
     const product = products.find(p => p.id === productId);
-
-    const { addToCart } = useCart();
 
     const [newReview, setNewReview] = useState({
         rating: 5,
@@ -103,7 +101,7 @@ export default function ProductDetailPage() {
                         <p className="text-gray-600 mb-6">{product.description}</p>
 
                         <button
-                            onClick={() => addToCart(product)}
+                            onClick={() => dispatch(addToCart(product))}
                             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
                         >
                             Add to Cart

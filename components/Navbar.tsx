@@ -2,17 +2,14 @@
 'use client';
 
 import { ShoppingCart, Heart, Menu } from 'lucide-react';
-import { useCart } from '@/contexts/CartContext';
 import { useAppSelector } from '@/store';
 import Link from '@/components/Link';
 import SearchBar from './SearchBar';
+import {selectCartItemsCount} from "@/store/cartSlice";
 
 export default function Navbar() {
-  const { cartItems } = useCart();
+  const totalCartItems = useAppSelector(selectCartItemsCount);
   const wishlistItems = useAppSelector(state => state.wishlist.items);
-
-  // Calculate total quantity of items in cart
-  const totalCartItems = cartItems.reduce((total, item) => total + item.quantity, 0);
 
   return (
       <nav className="bg-white shadow-sm">

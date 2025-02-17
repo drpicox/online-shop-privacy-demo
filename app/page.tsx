@@ -6,11 +6,9 @@ import { products, categories } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductGrid from '@/components/ProductGrid';
-import { useCart } from '@/contexts/CartContext';
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const { addToCart } = useCart();
 
   const filteredProducts = products.filter(product =>
       selectedCategory === "All" ? true : product.category === selectedCategory
@@ -29,7 +27,6 @@ export default function Home() {
 
           <ProductGrid
               products={filteredProducts}
-              onAddToCart={addToCart}
           />
         </main>
       </div>

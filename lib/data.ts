@@ -181,6 +181,9 @@ export const products: Product[] = [
     category: "Accessories",
     description: "Stylish crossbody bag with adjustable strap. Multiple compartments for organization."
   }
-];
+].map(p => ({
+  ...p,
+  image: `/products/dt-flat-${p.name.toLowerCase().replace(/ /g, '-')}.jpg`
+}));
 
 export const categories = ["All", "Shoes", "Outerwear", "T-Shirts", "Accessories"];

@@ -6,13 +6,11 @@ export type Route = 'home' | 'product' | 'cart' | 'likes' | 'checkout' | 'search
 interface NavigationState {
     currentRoute: Route;
     params: Record<string, string>;
-    searchQuery: string;
 }
 
 const initialState: NavigationState = {
     currentRoute: 'home',
     params: {},
-    searchQuery: '',
 };
 
 const navigationSlice = createSlice({
@@ -23,11 +21,12 @@ const navigationSlice = createSlice({
             state.currentRoute = action.payload.route;
             state.params = action.payload.params || {};
         },
-        setSearchQuery: (state, action: PayloadAction<string>) => {
-            state.searchQuery = action.payload;
-        },
     },
 });
 
-export const { navigate, setSearchQuery } = navigationSlice.actions;
+export const { navigate } = navigationSlice.actions;
 export default navigationSlice.reducer;
+
+export function selectNavigation(state: { navigation: NavigationState }) {
+    return state.navigation;
+}

@@ -1,17 +1,16 @@
 // app/search/page.tsx
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import ProductGrid from '@/components/ProductGrid';
 import Navbar from '@/components/Navbar';
-import { useCart } from '@/contexts/CartContext';
+import {useAppSelector} from "@/store";
+import {selectNavigation} from "@/store/navigationSlice";
 
 export default function SearchPage() {
-    const searchParams = useSearchParams();
-    const query = searchParams.get('q') || '';
-    const { addToCart } = useCart();
+    const {params} = useAppSelector(state => selectNavigation(state));
+    const query = params.q || '';
 
     const searchResults = searchProducts(products, query);
 
@@ -32,7 +31,6 @@ export default function SearchPage() {
                 {searchResults.length > 0 ? (
                     <ProductGrid
                         products={searchResults}
-                        onAddToCart={addToCart}
                     />
                 ) : (
                     <div className="text-center py-12">

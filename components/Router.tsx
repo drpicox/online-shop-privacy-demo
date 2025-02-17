@@ -10,7 +10,7 @@ import CheckoutPage from '@/app/checkout/page';
 import SearchPage from '@/app/search/page';
 
 export default function Router() {
-    const { currentRoute, params, searchQuery } = useAppSelector((state) => state.navigation);
+    const { currentRoute } = useAppSelector((state) => state.navigation);
 
     switch (currentRoute) {
         case 'home':

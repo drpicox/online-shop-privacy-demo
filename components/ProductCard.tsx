@@ -7,13 +7,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import Link from '@/components/Link';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { addToWishlist, removeFromWishlist } from '@/store/wishlistSlice';
+import {addToCart} from "@/store/cartSlice";
 
 interface ProductCardProps {
     product: Product;
-    onAddToCart: (product: Product) => void;
 }
 
-export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
     const dispatch = useAppDispatch();
     const liked = useAppSelector(state =>
         state.wishlist.items.some(item => item.id === product.id)
@@ -54,7 +54,8 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                         <button
                             onClick={(e) => {
                                 e.preventDefault(); // Prevent the Link from triggering
-                                onAddToCart(product);
+                                e.stopPropagation(); // Prevent the Link from triggering
+                                dispatch(addToCart(product));
                             }}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >

@@ -10,12 +10,14 @@ interface LinkProps {
     params?: Record<string, string>;
     children: ReactNode;
     className?: string;
+    onClick?: () => void;
 }
 
-export default function Link({ href, params, children, className }: LinkProps) {
+export default function Link({ href, params, children, className, onClick }: LinkProps) {
     const dispatch = useAppDispatch();
 
     const handleClick = (e: React.MouseEvent) => {
+        onClick?.();
         e.preventDefault();
         dispatch(navigate({ route: href, params }));
     };

@@ -2,11 +2,11 @@
 'use client';
 
 import { useState } from 'react';
-import { useCart } from '@/contexts/CartContext';
 import Navbar from '@/components/Navbar';
 import { CheckCircle } from 'lucide-react';
-import {useAppDispatch} from "@/store";
+import {useAppDispatch, useAppSelector} from "@/store";
 import {navigate} from "@/store/navigationSlice";
+import {clearCart, selectCartItems, selectCartTotal} from "@/store/cartSlice";
 
 interface OrderInfo {
     name: string;
@@ -16,7 +16,9 @@ interface OrderInfo {
 
 export default function CheckoutPage() {
     const dispatch = useAppDispatch();
-    const { cartItems, getCartTotal, clearCart } = useCart();
+    const cartItems = useAppSelector(state => selectCartItems(state));
+    const subtotal = useAppSelector(state => selectCartTotal(state));
+
     const [isConfirmed, setIsConfirmed] = useState(false);
     const [orderInfo, setOrderInfo] = useState<OrderInfo>({
         name: '',
@@ -24,7 +26,6 @@ export default function CheckoutPage() {
         phone: '',
     });
 
-    const subtotal = getCartTotal();
     const shipping = 10;
     const total = subtotal + shipping;
 
@@ -34,7 +35,7 @@ export default function CheckoutPage() {
     };
 
     const handleOrderComplete = () => {
-        clearCart();
+        dispatch(clearCart());
         dispatch(navigate({ route: 'home' }));
     };
 

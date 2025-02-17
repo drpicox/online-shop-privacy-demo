@@ -4,14 +4,12 @@
 import { Trash2 } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { removeFromWishlist } from '@/store/wishlistSlice';
-import { useCart } from '@/contexts/CartContext';
 import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
 
 export default function LikesPage() {
     const dispatch = useAppDispatch();
     const wishlistItems = useAppSelector(state => state.wishlist.items);
-    const { addToCart } = useCart();
 
     if (wishlistItems.length === 0) {
         return (
@@ -55,7 +53,7 @@ export default function LikesPage() {
                                 <p className="text-gray-600 mb-2">${item.price}</p>
                                 <div className="flex space-x-4">
                                     <button
-                                        onClick={() => addToCart(item)}
+                                        onClick={() => dispatch(addToCart(item))}
                                         className="text-blue-600 hover:text-blue-800 text-sm font-medium"
                                     >
                                         Add to Cart

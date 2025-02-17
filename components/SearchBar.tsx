@@ -2,16 +2,17 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
 import { Search, X } from 'lucide-react';
 import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import Link from '@/components/Link';
+import {navigate, selectNavigation} from "@/store/navigationSlice";
+import {useAppDispatch, useAppSelector} from "@/store";
 
 export default function SearchBar() {
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const [query, setQuery] = useState(searchParams.get('q') || '');
+    const dispatch = useAppDispatch();
+    const {params} = useAppSelector(state => selectNavigation(state));
+    const [query, setQuery] = useState(params.q || '');
     const [isOpen, setIsOpen] = useState(false);
     const [quickResults, setQuickResults] = useState<typeof products>([]);
 
@@ -29,7 +30,7 @@ export default function SearchBar() {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
-            router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+            dispatch(navigate({route: 'search', params: {q: query.trim()}}));
             setIsOpen(false);
         }
     };
@@ -62,7 +63,8 @@ export default function SearchBar() {
                     {quickResults.map((product) => (
                         <Link
                             key={product.id}
-                            href={`/search?q=${encodeURIComponent(query.trim())}`}
+                            href="search"
+                            params={{q: query.trim()}}
                             className="flex items-center p-4 hover:bg-gray-50 transition-colors border-b last:border-b-0"
                             onClick={() => setIsOpen(false)}
                         >

@@ -4,7 +4,6 @@
 import { Inter } from "next/font/google";
 import { Provider } from 'react-redux';
 import { store } from '@/store';
-import { CartProvider } from "@/contexts/CartContext";
 import Router from '@/components/Router';
 import "./globals.css";
 
@@ -15,9 +14,7 @@ export default function RootLayout() {
         <html lang="en">
         <body className={inter.className}>
         <Provider store={store}>
-            <CartProvider>
                 <Router />
-            </CartProvider>
         </Provider>
         </body>
         </html>
