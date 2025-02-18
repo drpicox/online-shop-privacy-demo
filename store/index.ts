@@ -3,11 +3,13 @@ import { configureStore } from '@reduxjs/toolkit';
 import navigationReducer from './navigationSlice';
 import wishlistReducer from './wishlistSlice';
 import cartReducer from "@/store/cartSlice";
+import filterReducer from "@/store/filterSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 export const store = configureStore({
     reducer: {
         cart: cartReducer,
+        filter: filterReducer,
         navigation: navigationReducer,
         wishlist: wishlistReducer,
     },

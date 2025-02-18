@@ -6,9 +6,11 @@ import { products, categories } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductGrid from '@/components/ProductGrid';
+import {useAppSelector} from "@/store";
+import {selectCategory} from "@/store/filterSlice";
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const selectedCategory = useAppSelector(selectCategory);
 
   const filteredProducts = products.filter(product =>
       selectedCategory === "All" ? true : product.category === selectedCategory
@@ -21,8 +23,6 @@ export default function Home() {
         <main className="max-w-7xl mx-auto px-4 py-8">
           <CategoryFilter
               categories={categories}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
           />
 
           <ProductGrid
