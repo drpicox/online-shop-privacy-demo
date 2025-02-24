@@ -6,6 +6,7 @@ import cartReducer from '../cartSlice';
 import filterReducer from '../filterSlice';
 import searchReducer from '../searchSlice';
 import checkoutReducer from '../checkoutSlice';
+import trackingReducer from '../trackingSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 export const shopStore = configureStore({
@@ -16,6 +17,7 @@ export const shopStore = configureStore({
     navigation: navigationReducer,
     search: searchReducer,
     wishlist: wishlistReducer,
+    tracking: trackingReducer,
   },
 });
 
