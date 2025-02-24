@@ -1,41 +1,39 @@
 // app/checkout/page.tsx
 'use client';
 
-import { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { CheckCircle } from 'lucide-react';
-import {useAppDispatch, useAppSelector} from "@/store";
-import {navigate} from "@/store/navigationSlice";
-import {clearCart, selectCartItems, selectCartTotal} from "@/store/cartSlice";
-
-interface OrderInfo {
-    name: string;
-    city: string;
-    phone: string;
-}
+import { useAppDispatch, useAppSelector } from "@/store";
+import { navigate } from "@/store/navigationSlice";
+import { clearCart, selectCartItems, selectCartTotal } from "@/store/cartSlice";
+import { 
+    setName, 
+    setCity, 
+    setPhone, 
+    confirmOrder, 
+    resetCheckout, 
+    selectCheckoutInfo, 
+    selectIsConfirmed 
+} from "@/store/checkoutSlice";
 
 export default function CheckoutPage() {
     const dispatch = useAppDispatch();
     const cartItems = useAppSelector(state => selectCartItems(state));
     const subtotal = useAppSelector(state => selectCartTotal(state));
-
-    const [isConfirmed, setIsConfirmed] = useState(false);
-    const [orderInfo, setOrderInfo] = useState<OrderInfo>({
-        name: '',
-        city: '',
-        phone: '',
-    });
+    const { name, city, phone } = useAppSelector(selectCheckoutInfo);
+    const isConfirmed = useAppSelector(selectIsConfirmed);
 
     const shipping = 10;
     const total = subtotal + shipping;
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        setIsConfirmed(true);
+        dispatch(confirmOrder());
     };
 
     const handleOrderComplete = () => {
         dispatch(clearCart());
+        dispatch(resetCheckout());
         dispatch(navigate({ route: 'home' }));
     };
 
@@ -47,7 +45,7 @@ export default function CheckoutPage() {
                     <div className="bg-white p-6 rounded-lg shadow text-center">
                         <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
                         <h2 className="text-2xl font-bold mb-2">Order Confirmed!</h2>
-                        <p className="text-gray-600 mb-6">Thanks for your order, {orderInfo.name}!</p>
+                        <p className="text-gray-600 mb-6">Thanks for your order, {name}!</p>
                         <button
                             onClick={handleOrderComplete}
                             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors w-full"
@@ -104,8 +102,8 @@ export default function CheckoutPage() {
                             <input
                                 type="text"
                                 required
-                                value={orderInfo.name}
-                                onChange={(e) => setOrderInfo({...orderInfo, name: e.target.value})}
+                                value={name}
+                                onChange={(e) => dispatch(setName(e.target.value))}
                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                                 placeholder="Your name"
                             />
@@ -115,8 +113,8 @@ export default function CheckoutPage() {
                             <input
                                 type="text"
                                 required
-                                value={orderInfo.city}
-                                onChange={(e) => setOrderInfo({...orderInfo, city: e.target.value})}
+                                value={city}
+                                onChange={(e) => dispatch(setCity(e.target.value))}
                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                                 placeholder="Your city"
                             />
@@ -126,8 +124,8 @@ export default function CheckoutPage() {
                             <input
                                 type="tel"
                                 required
-                                value={orderInfo.phone}
-                                onChange={(e) => setOrderInfo({...orderInfo, phone: e.target.value})}
+                                value={phone}
+                                onChange={(e) => dispatch(setPhone(e.target.value))}
                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
                                 placeholder="Your phone number"
                             />

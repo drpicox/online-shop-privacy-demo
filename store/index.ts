@@ -5,11 +5,13 @@ import wishlistReducer from './wishlistSlice';
 import cartReducer from "@/store/cartSlice";
 import filterReducer from "@/store/filterSlice";
 import searchReducer from "@/store/searchSlice";
+import checkoutReducer from "@/store/checkoutSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 
 export const store = configureStore({
     reducer: {
         cart: cartReducer,
+        checkout: checkoutReducer,
         filter: filterReducer,
         navigation: navigationReducer,
         search: searchReducer,
