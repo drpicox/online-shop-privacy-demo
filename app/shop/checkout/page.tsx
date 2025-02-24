@@ -3,7 +3,7 @@
 
 import Navbar from '@/components/Navbar';
 import { CheckCircle } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from "@/store";
+import { useShopDispatch, useShopSelector } from "@/store";
 import { navigate } from "@/store/navigationSlice";
 import { clearCart, selectCartItems, selectCartTotal } from "@/store/cartSlice";
 import { 
@@ -17,11 +17,11 @@ import {
 } from "@/store/checkoutSlice";
 
 export default function CheckoutPage() {
-    const dispatch = useAppDispatch();
-    const cartItems = useAppSelector(state => selectCartItems(state));
-    const subtotal = useAppSelector(state => selectCartTotal(state));
-    const { name, city, phone } = useAppSelector(selectCheckoutInfo);
-    const isConfirmed = useAppSelector(selectIsConfirmed);
+    const dispatch = useShopDispatch();
+    const cartItems = useShopSelector(state => selectCartItems(state));
+    const subtotal = useShopSelector(state => selectCartTotal(state));
+    const { name, city, phone } = useShopSelector(selectCheckoutInfo);
+    const isConfirmed = useShopSelector(selectIsConfirmed);
 
     const shipping = 10;
     const total = subtotal + shipping;

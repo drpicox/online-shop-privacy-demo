@@ -7,12 +7,12 @@ import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import Link from '@/components/Link';
 import {navigate} from "@/store/navigationSlice";
-import {useAppDispatch, useAppSelector} from "@/store";
+import {useShopDispatch, useShopSelector} from "@/store";
 import {selectSearchQuery, setSearchQuery} from "@/store/searchSlice";
 
 export default function SearchBar() {
-    const dispatch = useAppDispatch();
-    const query = useAppSelector(selectSearchQuery);
+    const dispatch = useShopDispatch();
+    const query = useShopSelector(selectSearchQuery);
     const isOpen = query.length >= 2;
     const quickResults = useMemo(() => isOpen ? searchProducts(products, query).slice(0, 3) : [], [query, isOpen]);
 

@@ -2,15 +2,15 @@
 'use client';
 
 import { Trash2 } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useShopDispatch, useShopSelector } from '@/store';
 import { removeFromWishlist } from '@/store/wishlistSlice';
 import { addToCart } from '@/store/cartSlice';
 import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
 
 export default function LikesPage() {
-    const dispatch = useAppDispatch();
-    const wishlistItems = useAppSelector(state => state.wishlist.items);
+    const dispatch = useShopDispatch();
+    const wishlistItems = useShopSelector(state => state.wishlist.items);
 
     if (wishlistItems.length === 0) {
         return (

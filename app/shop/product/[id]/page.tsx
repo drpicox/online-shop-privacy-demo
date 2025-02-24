@@ -4,16 +4,16 @@
 import { Heart } from 'lucide-react';
 import { products } from '@/lib/data';
 import Navbar from '@/components/Navbar';
-import {useAppDispatch, useAppSelector} from '@/store';
+import {useShopDispatch, useShopSelector} from '@/store';
 import {addToWishlist, removeFromWishlist, selectIsInWishlist} from "@/store/wishlistSlice";
 import {addToCart} from "@/store/cartSlice";
 
 export default function ProductDetailPage() {
     // Get productId from Redux navigation state
-    const dispatch = useAppDispatch();
-    const { params } = useAppSelector(state => state.navigation);
+    const dispatch = useShopDispatch();
+    const { params } = useShopSelector(state => state.navigation);
     const productId = Number(params.id);
-    const liked = useAppSelector(state => selectIsInWishlist(state, productId));
+    const liked = useShopSelector(state => selectIsInWishlist(state, productId));
     const product = products.find(p => p.id === productId);
 
     if (!product) {

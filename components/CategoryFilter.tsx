@@ -1,7 +1,7 @@
 // components/CategoryFilter.tsx
 'use client';
 
-import {useAppDispatch, useAppSelector} from "@/store";
+import {useShopDispatch, useShopSelector} from "@/store";
 import {selectCategory, setCategory} from "@/store/filterSlice";
 
 interface CategoryFilterProps {
@@ -11,8 +11,8 @@ interface CategoryFilterProps {
 export default function CategoryFilter({ 
   categories,
 }: CategoryFilterProps) {
-  const dispatch = useAppDispatch();
-  const selectedCategory = useAppSelector(selectCategory);
+  const dispatch = useShopDispatch();
+  const selectedCategory = useShopSelector(selectCategory);
 
   return (
     <div className="flex space-x-4 mb-8 overflow-x-auto pb-2">

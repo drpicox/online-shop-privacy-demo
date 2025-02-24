@@ -5,11 +5,11 @@ import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import ProductGrid from '@/components/ProductGrid';
 import Navbar from '@/components/Navbar';
-import {useAppSelector} from "@/store";
+import {useShopSelector} from "@/store";
 import {selectNavigation} from "@/store/navigationSlice";
 
 export default function SearchPage() {
-    const {params} = useAppSelector(state => selectNavigation(state));
+    const {params} = useShopSelector(state => selectNavigation(state));
     const query = params.query || '';
 
     const searchResults = searchProducts(products, query);

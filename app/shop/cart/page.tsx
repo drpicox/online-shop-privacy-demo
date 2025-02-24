@@ -2,16 +2,16 @@
 'use client';
 
 import { Minus, Plus, Trash2 } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useShopDispatch, useShopSelector } from '@/store';
 import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity } from '@/store/cartSlice';
 import { navigate } from '@/store/navigationSlice';
 import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
 
 export default function CartPage() {
-  const dispatch = useAppDispatch();
-  const cartItems = useAppSelector(selectCartItems);
-  const cartTotal = useAppSelector(selectCartTotal);
+  const dispatch = useShopDispatch();
+  const cartItems = useShopSelector(selectCartItems);
+  const cartTotal = useShopSelector(selectCartTotal);
 
   if (cartItems.length === 0) {
     return (

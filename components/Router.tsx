@@ -1,7 +1,7 @@
 // components/Router.tsx
 'use client';
 
-import { useAppSelector } from '@/store';
+import { useShopSelector } from '@/store';
 import ShopPage from '@/app/shop/page';
 import ProductDetailPage from '@/app/shop/product/[id]/page';
 import CartPage from '@/app/shop/cart/page';
@@ -14,7 +14,7 @@ interface RouterProps {
 }
 
 export default function Router({ basePath = '' }: RouterProps) {
-  const { currentRoute } = useAppSelector((state) => state.navigation);
+  const { currentRoute } = useShopSelector((state) => state.navigation);
 
   switch (currentRoute) {
     case 'home':

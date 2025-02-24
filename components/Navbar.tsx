@@ -2,14 +2,14 @@
 'use client';
 
 import { ShoppingCart, Heart, Menu } from 'lucide-react';
-import { useAppSelector } from '@/store';
+import { useShopSelector } from '@/store';
 import Link from '@/components/Link';
 import SearchBar from './SearchBar';
 import {selectCartItemsCount} from "@/store/cartSlice";
 
 export default function Navbar() {
-  const totalCartItems = useAppSelector(selectCartItemsCount);
-  const wishlistItems = useAppSelector(state => state.wishlist.items);
+  const totalCartItems = useShopSelector(selectCartItemsCount);
+  const wishlistItems = useShopSelector(state => state.wishlist.items);
 
   return (
       <nav className="bg-white shadow-sm">

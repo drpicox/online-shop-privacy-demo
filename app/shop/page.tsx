@@ -5,11 +5,11 @@ import { products, categories } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductGrid from '@/components/ProductGrid';
-import { useAppSelector } from "@/store";
+import { useShopSelector } from "@/store";
 import { selectCategory } from "@/store/filterSlice";
 
 export default function ShopPage() {
-  const selectedCategory = useAppSelector(selectCategory);
+  const selectedCategory = useShopSelector(selectCategory);
 
   const filteredProducts = products.filter(product =>
       selectedCategory === "All" ? true : product.category === selectedCategory

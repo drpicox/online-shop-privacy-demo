@@ -5,7 +5,7 @@ import { Heart } from 'lucide-react';
 import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from '@/components/Link';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useShopDispatch, useShopSelector } from '@/store';
 import { addToWishlist, removeFromWishlist } from '@/store/wishlistSlice';
 import {addToCart} from "@/store/cartSlice";
 
@@ -14,8 +14,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-    const dispatch = useAppDispatch();
-    const liked = useAppSelector(state =>
+    const dispatch = useShopDispatch();
+    const liked = useShopSelector(state =>
         state.wishlist.items.some(item => item.id === product.id)
     );
 

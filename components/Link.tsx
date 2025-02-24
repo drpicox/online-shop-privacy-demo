@@ -2,7 +2,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useShopDispatch, useShopSelector } from '@/store';
 import { navigate, Route, getFullPath } from '@/store/navigationSlice';
 
 interface LinkProps {
@@ -14,8 +14,8 @@ interface LinkProps {
 }
 
 export default function Link({ href, params, children, className, onClick }: LinkProps) {
-    const dispatch = useAppDispatch();
-    const { basePath } = useAppSelector(state => state.navigation);
+    const dispatch = useShopDispatch();
+    const { basePath } = useShopSelector(state => state.navigation);
 
     const handleClick = (e: React.MouseEvent) => {
         onClick?.();

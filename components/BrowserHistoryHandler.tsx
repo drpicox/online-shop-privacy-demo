@@ -2,11 +2,11 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useAppDispatch } from '@/store';
+import { useShopDispatch } from '@/store';
 import { Route, syncWithBrowserHistory } from '@/store/navigationSlice';
 
 export default function BrowserHistoryHandler() {
-  const dispatch = useAppDispatch();
+  const dispatch = useShopDispatch();
 
   useEffect(() => {
     // Function to parse the URL and update Redux state
