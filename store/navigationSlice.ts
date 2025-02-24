@@ -21,10 +21,14 @@ const navigationSlice = createSlice({
             state.currentRoute = action.payload.route;
             state.params = action.payload.params || {};
         },
+        syncWithBrowserHistory: (state, action: PayloadAction<{ route: Route; params?: Record<string, string> }>) => {
+            state.currentRoute = action.payload.route;
+            state.params = action.payload.params || {};
+        },
     },
 });
 
-export const { navigate } = navigationSlice.actions;
+export const { navigate, syncWithBrowserHistory } = navigationSlice.actions;
 export default navigationSlice.reducer;
 
 export function selectNavigation(state: { navigation: NavigationState }) {
