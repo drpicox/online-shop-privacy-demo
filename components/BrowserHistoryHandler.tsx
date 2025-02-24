@@ -13,6 +13,11 @@ export default function BrowserHistoryHandler() {
     const syncStateWithURL = () => {
       const pathname = window.location.pathname;
       
+      // If not in shop section, don't handle the route
+      if (!pathname.startsWith('/shop') && pathname !== '/') {
+        return;
+      }
+      
       // Map URL paths to Route types and extract params
       let route: Route = 'home';
       const params: Record<string, string> = {};

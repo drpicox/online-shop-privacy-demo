@@ -3,11 +3,11 @@
 
 import { useAppSelector } from '@/store';
 import ShopPage from '@/app/shop/page';
-import ProductDetailPage from '@/app/product/[id]/page';
-import CartPage from '@/app/cart/page';
-import LikesPage from '@/app/likes/page';
-import CheckoutPage from '@/app/checkout/page';
-import SearchPage from '@/app/search/page';
+import ProductDetailPage from '@/app/shop/product/[id]/page';
+import CartPage from '@/app/shop/cart/page';
+import LikesPage from '@/app/shop/likes/page';
+import CheckoutPage from '@/app/shop/checkout/page';
+import SearchPage from '@/app/shop/search/page';
 
 interface RouterProps {
   basePath?: string;

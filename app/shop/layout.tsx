@@ -5,16 +5,11 @@ import { store } from '@/store';
 import Router from '@/components/Router';
 import BrowserHistoryHandler from '@/components/BrowserHistoryHandler';
 
-export default function ShopLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function ShopLayout() {
   return (
     <Provider store={store}>
       <BrowserHistoryHandler />
       <Router basePath="/shop" />
-      {children}
     </Provider>
   );
 }
