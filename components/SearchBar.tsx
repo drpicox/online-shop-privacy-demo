@@ -1,37 +1,26 @@
 // components/SearchBar.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useMemo} from 'react';
 import { Search, X } from 'lucide-react';
 import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import Link from '@/components/Link';
-import {navigate, selectNavigation} from "@/store/navigationSlice";
+import {navigate} from "@/store/navigationSlice";
 import {useAppDispatch, useAppSelector} from "@/store";
+import {selectSearchQuery, setSearchQuery} from "@/store/searchSlice";
 
 export default function SearchBar() {
     const dispatch = useAppDispatch();
-    const {params} = useAppSelector(state => selectNavigation(state));
-    const [query, setQuery] = useState(params.q || '');
-    const [isOpen, setIsOpen] = useState(false);
-    const [quickResults, setQuickResults] = useState<typeof products>([]);
-
-    useEffect(() => {
-        if (query.length >= 2) {
-            const results = searchProducts(products, query).slice(0, 5);
-            setQuickResults(results);
-            setIsOpen(true);
-        } else {
-            setQuickResults([]);
-            setIsOpen(false);
-        }
-    }, [query]);
+    const query = useAppSelector(selectSearchQuery);
+    const isOpen = query.length >= 2;
+    const quickResults = useMemo(() => isOpen ? searchProducts(products, query).slice(0, 3) : [], [query, isOpen]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
             dispatch(navigate({route: 'search', params: {q: query.trim()}}));
-            setIsOpen(false);
+            dispatch(setSearchQuery(''));
         }
     };
 
@@ -41,7 +30,7 @@ export default function SearchBar() {
                 <input
                     type="text"
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                     placeholder="Search products..."
                     className="pl-8 pr-10 py-2 border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
@@ -49,7 +38,7 @@ export default function SearchBar() {
                 {query && (
                     <button
                         type="button"
-                        onClick={() => setQuery('')}
+                        onClick={() => dispatch(setSearchQuery(''))}
                         className="absolute right-2 top-2.5 text-gray-400 hover:text-gray-600"
                     >
                         <X className="h-5 w-5" />
@@ -66,7 +55,7 @@ export default function SearchBar() {
                             href="search"
                             params={{q: query.trim()}}
                             className="flex items-center p-4 hover:bg-gray-50 transition-colors border-b last:border-b-0"
-                            onClick={() => setIsOpen(false)}
+                            onClick={() => dispatch(setSearchQuery(''))}
                         >
                             <img
                                 src={product.image}

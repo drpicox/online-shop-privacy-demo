@@ -1,7 +1,6 @@
 // app/page.tsx
 'use client';
 
-import { useState } from 'react';
 import { products, categories } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import CategoryFilter from '@/components/CategoryFilter';

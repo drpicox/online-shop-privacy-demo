@@ -1,5 +1,17 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Objective of this project
+
+The objective of this project is to provide a sandbox to create a virtual 
+store in which parents of schools can use, and see how they -and their
+children- can be tracked, so they can create an awareness of the protection
+of their data.
+
+The objective is to have two views: one the shop view, and another
+the view of the viewers. The shop movements and actions will be recorded
+and sent through a socket to the viewer. The viewer will show each client
+simultanously how it moves.
+
 ## Getting Started
 
 First, run the development server:
