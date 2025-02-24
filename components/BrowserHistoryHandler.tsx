@@ -17,15 +17,22 @@ export default function BrowserHistoryHandler() {
       let route: Route = 'home';
       const params: Record<string, string> = {};
       
-      if (pathname === '/') {
+      // Check if we're in the shop section
+      const isShopPath = pathname.startsWith('/shop');
+      const relativePath = isShopPath ? pathname.replace('/shop', '') : pathname;
+      
+      // Ensure relativePath starts with a slash for empty paths
+      const normalizedPath = relativePath === '' ? '/' : relativePath;
+      
+      if (normalizedPath === '/') {
         route = 'home';
-      } else if (pathname === '/cart') {
+      } else if (normalizedPath === '/cart') {
         route = 'cart';
-      } else if (pathname === '/likes') {
+      } else if (normalizedPath === '/likes') {
         route = 'likes';
-      } else if (pathname === '/checkout') {
+      } else if (normalizedPath === '/checkout') {
         route = 'checkout';
-      } else if (pathname === '/search') {
+      } else if (normalizedPath === '/search') {
         route = 'search';
         // Extract search query from URL if present
         const searchParams = new URLSearchParams(window.location.search);
@@ -33,10 +40,10 @@ export default function BrowserHistoryHandler() {
         if (query) {
           params.query = query;
         }
-      } else if (pathname.startsWith('/product/')) {
+      } else if (normalizedPath.startsWith('/product/')) {
         route = 'product';
         // Extract product ID from URL
-        const id = pathname.split('/')[2];
+        const id = normalizedPath.split('/')[2];
         if (id) {
           params.id = id;
         }

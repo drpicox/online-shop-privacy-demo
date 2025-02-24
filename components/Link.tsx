@@ -1,9 +1,9 @@
 // components/Link.tsx
 'use client';
 
-import { ReactNode, useEffect } from 'react';
-import { useAppDispatch } from '@/store';
-import { navigate, Route } from '@/store/navigationSlice';
+import { ReactNode } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { navigate, Route, getFullPath } from '@/store/navigationSlice';
 
 interface LinkProps {
     href: Route;
@@ -15,26 +15,32 @@ interface LinkProps {
 
 export default function Link({ href, params, children, className, onClick }: LinkProps) {
     const dispatch = useAppDispatch();
+    const { basePath } = useAppSelector(state => state.navigation);
 
     const handleClick = (e: React.MouseEvent) => {
         onClick?.();
         e.preventDefault();
         
         // Update browser history when navigating
-        const url = getUrlFromRoute(href, params);
-        window.history.pushState({ route: href, params }, '', url);
+        const relativePath = getUrlFromRoute(href, params);
+        const fullPath = getFullPath(relativePath, basePath);
+        
+        window.history.pushState({ route: href, params }, '', fullPath);
         
         dispatch(navigate({ route: href, params }));
     };
 
+    const relativePath = getUrlFromRoute(href, params);
+    const fullPath = getFullPath(relativePath, basePath);
+
     return (
-        <a href={getUrlFromRoute(href, params)} onClick={handleClick} className={className}>
+        <a href={fullPath} onClick={handleClick} className={className}>
             {children}
         </a>
     );
 }
 
-// Helper function to convert route and params to URL
+// Helper function to convert route and params to URL (returns relative path)
 function getUrlFromRoute(route: Route, params?: Record<string, string>): string {
     switch (route) {
         case 'home':
