@@ -8,25 +8,7 @@ export const products: Product[] = [
     price: 79.99,
     image: "/products/classic-white-sneakers.png",
     category: "Shoes",
-    description: "Versatile white sneakers perfect for any casual outfit. Features a comfortable cushioned sole and premium materials for lasting durability.",
-    reviews: [
-      {
-        id: 1,
-        productId: 1,
-        userName: "Alex",
-        rating: 5,
-        comment: "Super comfortable and goes with everything!",
-        date: "2024-02-10"
-      },
-      {
-        id: 2,
-        productId: 1,
-        userName: "Sarah",
-        rating: 4,
-        comment: "Great quality, but runs slightly large.",
-        date: "2024-02-08"
-      }
-    ]
+    description: "Versatile white sneakers perfect for any casual outfit. Features a comfortable cushioned sole and premium materials for lasting durability."
   },
   {
     id: 2,
@@ -34,24 +16,21 @@ export const products: Product[] = [
     price: 129.99,
     image: "/products/denim-jacket.png",
     category: "Outerwear",
-    description: "Classic denim jacket made from premium cotton. Features a comfortable fit, multiple pockets, and vintage-style washing.",
-    reviews: []
+    description: "Classic denim jacket made from premium cotton. Features a comfortable fit, multiple pockets, and vintage-style washing."
   },
   {
     id: 3,
     name: "Vintage T-Shirt",
     price: 29.99,
     image: "/products/vintage-tshirt.png",
-    category: "T-Shirts",
-    reviews: []
+    category: "T-Shirts"
   },
   {
     id: 4,
     name: "Leather Backpack",
     price: 89.99,
     image: "/products/leather-backpack.png",
-    category: "Accessories",
-    reviews: []
+    category: "Accessories"
   },
   {
     id: 5,
