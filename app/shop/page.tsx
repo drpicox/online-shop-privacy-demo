@@ -7,9 +7,22 @@ import CategoryFilter from '@/components/CategoryFilter';
 import ProductGrid from '@/components/ProductGrid';
 import { useShopSelector } from "@/store";
 import { selectCategory } from "@/store/shop/slices/filterSlice";
+import { useEffect } from 'react';
+import { initSocket } from '@/lib/socket';
 
 export default function ShopPage() {
   const selectedCategory = useShopSelector(selectCategory);
+
+  // Ensure socket is initialized when page component mounts
+  useEffect(() => {
+    console.log("Shop page mounted - ensuring socket connection");
+    // Initialize socket directly on page load
+    const socket = initSocket();
+    
+    return () => {
+      // No need to disconnect on page unmount as we want the socket to persist
+    };
+  }, []);
 
   const filteredProducts = products.filter(product =>
       selectedCategory === "All" ? true : product.category === selectedCategory

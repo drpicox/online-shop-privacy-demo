@@ -1,18 +1,32 @@
 'use client';
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ViewerSocketInitializer from "@/components/ViewerSocketInitializer";
 import ViewerStatus from "@/components/ViewerStatus";
 import ClientsList from "@/components/ClientsList";
 import ActionViewer from "@/components/ActionViewer";
+import { initViewerSocket } from "@/lib/viewerSocket";
+import { viewerStore } from "@/store/viewer";
 
 export default function ViewerPage() {
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
   
+  // Initialize socket connection in the page component as well
+  useEffect(() => {
+    console.log("Viewer page mounted - ensuring socket connection");
+    
+    // Initialize viewer socket directly
+    const socket = initViewerSocket(viewerStore);
+    
+    return () => {
+      // We don't disconnect on unmount to maintain the connection
+    };
+  }, []);
+  
   return (
     <div className="min-h-screen flex flex-col p-6">
-      {/* Initialize socket connection */}
+      {/* Initialize socket connection (kept for backward compatibility) */}
       <ViewerSocketInitializer />
       
       {/* Header */}

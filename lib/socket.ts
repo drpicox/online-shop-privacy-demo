@@ -62,19 +62,36 @@ export const initSocket = (): Socket => {
 
 // Send Redux action to server
 export const sendReduxAction = (action: any): void => {
-  if (!socket?.connected) {
-    initSocket();
+  if (!socket || !socket.connected) {
+    // Re-initialize the socket immediately if it's not connected
+    console.log('Socket not connected, attempting to reconnect before sending action');
+    const newSocket = initSocket();
+    
+    // Wait briefly for connection to establish before sending
+    setTimeout(() => {
+      if (newSocket.connected) {
+        console.log('Connection established, sending delayed action');
+        newSocket.emit('redux_action', {
+          ...action,
+          client: {
+            id: clientId,
+            name: clientName,
+            socketId: newSocket.id
+          }
+        });
+      }
+    }, 500);
+  } else {
+    // Include client identification with each action
+    socket.emit('redux_action', {
+      ...action,
+      client: {
+        id: clientId,
+        name: clientName,
+        socketId: socket.id
+      }
+    });
   }
-  
-  // Include client identification with each action
-  socket?.emit('redux_action', {
-    ...action,
-    client: {
-      id: clientId,
-      name: clientName,
-      socketId: socket?.id
-    }
-  });
 };
 
 // Get the socket instance

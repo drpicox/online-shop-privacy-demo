@@ -142,12 +142,18 @@ app.prepare().then(() => {
     viewerClients.add(socket.id);
     console.log(`Active viewers: ${viewerClients.size}`);
     
-    // Send current active clients list when requested
+    // Send active clients immediately on connection (don't wait for request)
+    const clientsList = Array.from(clientsById.values());
+    console.log(`Sending ${clientsList.length} clients to newly connected viewer`);
+    debugClients();
+    socket.emit('active_clients', clientsList);
+    
+    // Also handle explicit requests for clients list
     socket.on('get_active_clients', () => {
-      const clientsList = Array.from(clientsById.values());
-      console.log(`Viewer requested active clients - sending ${clientsList.length} clients`);
+      const updatedClientsList = Array.from(clientsById.values());
+      console.log(`Viewer explicitly requested active clients - sending ${updatedClientsList.length} clients`);
       debugClients();
-      socket.emit('active_clients', clientsList);
+      socket.emit('active_clients', updatedClientsList);
     });
     
     socket.on('disconnect', () => {
