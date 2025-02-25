@@ -177,6 +177,11 @@ export const selectActiveClients = (state: ViewerRootState) => {
 };
 export const selectClientActions = (state: ViewerRootState, clientId: string) => 
   state.clients.actions[clientId] || [];
+  
+export const selectClientLastAction = (state: ViewerRootState, clientId: string) => {
+  const actions = state.clients.actions[clientId] || [];
+  return actions.length > 0 ? actions[0] : null;
+};
 export const selectLastAction = (state: ViewerRootState) => state.clients.lastAction;
 export const selectIsConnected = (state: ViewerRootState) => state.clients.connected;
 export const selectActiveClientCount = (state: ViewerRootState) => {

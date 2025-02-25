@@ -1,29 +1,38 @@
 'use client';
 
 import { useViewerSelector } from '@/store/viewer';
-import { selectClientActions, selectLastAction } from '@/store/viewer';
+import { selectClientActions, selectLastAction, selectClientLastAction } from '@/store/viewer';
 import { ReduxAction } from '@/store/viewer/slices/clientsSlice';
 import { useEffect, useState } from 'react';
 
 interface ActionViewerProps {
   clientId?: string; 
+  showLastActionOnly?: boolean;
 }
 
-export default function ActionViewer({ clientId }: ActionViewerProps) {
+export default function ActionViewer({ clientId, showLastActionOnly = false }: ActionViewerProps) {
   const clientActions = clientId ? useViewerSelector((state) => selectClientActions(state, clientId)) : [];
+  const clientLastAction = clientId ? useViewerSelector((state) => selectClientLastAction(state, clientId)) : null;
   const lastAction = useViewerSelector(selectLastAction);
   const [actions, setActions] = useState<ReduxAction[]>([]);
   
   // Use either the selected client's actions or the last action across all clients
   useEffect(() => {
-    if (clientId && clientActions) {
-      setActions(clientActions);
+    if (clientId) {
+      if (showLastActionOnly && clientLastAction) {
+        // Show only the last action for this client
+        setActions([clientLastAction]);
+      } else {
+        // Show all actions for this client
+        setActions(clientActions);
+      }
     } else if (lastAction) {
+      // Show the most recent action across all clients
       setActions([lastAction]);
     } else {
       setActions([]);
     }
-  }, [clientId, clientActions, lastAction]);
+  }, [clientId, clientActions, lastAction, clientLastAction, showLastActionOnly]);
   
   if (actions.length === 0) {
     return (
@@ -36,7 +45,12 @@ export default function ActionViewer({ clientId }: ActionViewerProps) {
   return (
     <div className="bg-gray-100 rounded-lg overflow-hidden">
       <h2 className="bg-gray-200 p-3 font-bold">
-        {clientId ? `Actions for ${actions[0]?.client?.name || clientId}` : 'Latest Action'}
+        {clientId 
+          ? showLastActionOnly 
+            ? `Latest Action for ${actions[0]?.client?.name || clientId}` 
+            : `Actions for ${actions[0]?.client?.name || clientId}`
+          : 'Latest Action'
+        }
       </h2>
       <div className="overflow-y-auto max-h-[60vh]">
         {actions.map((action, index) => (
