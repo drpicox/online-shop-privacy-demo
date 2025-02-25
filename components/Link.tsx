@@ -54,7 +54,7 @@ function getUrlFromRoute(route: Route, params?: Record<string, string>): string 
         case 'checkout':
             return '/checkout';
         case 'search':
-            return `/search${params?.query ? `?query=${params.query}` : ''}`;
+            return `/search${params?.q ? `?q=${params.q}` : ''}`;
         default:
             return '/';
     }

@@ -41,9 +41,9 @@ export default function BrowserHistoryHandler() {
         route = 'search';
         // Extract search query from URL if present
         const searchParams = new URLSearchParams(window.location.search);
-        const query = searchParams.get('query');
+        const query = searchParams.get('q');
         if (query) {
-          params.query = query;
+          params.q = query;
         }
       } else if (normalizedPath.startsWith('/product/')) {
         route = 'product';

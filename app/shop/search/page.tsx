@@ -10,7 +10,7 @@ import {selectNavigation} from "@/store/shop/slices/navigationSlice";
 
 export default function SearchPage() {
     const {params} = useShopSelector(state => selectNavigation(state));
-    const query = params.query || '';
+    const query = params.q || '';
 
     const searchResults = searchProducts(products, query);
 
