@@ -5,8 +5,8 @@ import { Heart } from 'lucide-react';
 import { products } from '@/lib/data';
 import Navbar from '@/components/Navbar';
 import {useShopDispatch, useShopSelector} from '@/store';
-import {addToWishlist, removeFromWishlist, selectIsInWishlist} from "@/store/wishlistSlice";
-import {addToCart} from "@/store/cartSlice";
+import {addToWishlist, removeFromWishlist, selectIsInWishlist} from "@/store/shop/slices/wishlistSlice";
+import {addToCart} from "@/store/shop/slices/cartSlice";
 
 export default function ProductDetailPage() {
     // Get productId from Redux navigation state

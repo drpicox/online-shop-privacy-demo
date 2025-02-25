@@ -6,7 +6,7 @@ import { searchProducts } from '@/utils/search';
 import ProductGrid from '@/components/ProductGrid';
 import Navbar from '@/components/Navbar';
 import {useShopSelector} from "@/store";
-import {selectNavigation} from "@/store/navigationSlice";
+import {selectNavigation} from "@/store/shop/slices/navigationSlice";
 
 export default function SearchPage() {
     const {params} = useShopSelector(state => selectNavigation(state));
@@ -21,7 +21,7 @@ export default function SearchPage() {
             <main className="max-w-7xl mx-auto px-4 py-8">
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold mb-2">
-                        Search Results for "{query}"
+                        Search Results for &quot;{query}&quot;
                     </h1>
                     <p className="text-gray-600">
                         Found {searchResults.length} {searchResults.length === 1 ? 'product' : 'products'}
@@ -36,7 +36,7 @@ export default function SearchPage() {
                     <div className="text-center py-12">
                         <h2 className="text-xl font-semibold mb-4">No products found</h2>
                         <p className="text-gray-600">
-                            Try adjusting your search or browse our categories for what you're looking for.
+                            Try adjusting your search or browse our categories for what you&apos;re looking for.
                         </p>
                     </div>
                 )}

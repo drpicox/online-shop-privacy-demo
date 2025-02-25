@@ -6,8 +6,8 @@ import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from '@/components/Link';
 import { useShopDispatch, useShopSelector } from '@/store';
-import { addToWishlist, removeFromWishlist } from '@/store/wishlistSlice';
-import {addToCart} from "@/store/cartSlice";
+import { addToWishlist, removeFromWishlist } from '@/store/shop/slices/wishlistSlice';
+import {addToCart} from "@/store/shop/slices/cartSlice";
 
 interface ProductCardProps {
     product: Product;

@@ -2,7 +2,7 @@
 'use client';
 
 import {useShopDispatch, useShopSelector} from "@/store";
-import {selectCategory, setCategory} from "@/store/filterSlice";
+import {selectCategory, setCategory} from "@/store/shop/slices/filterSlice";
 
 interface CategoryFilterProps {
   categories: string[];

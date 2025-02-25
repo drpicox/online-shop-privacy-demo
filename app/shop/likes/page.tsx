@@ -3,8 +3,8 @@
 
 import { Trash2 } from 'lucide-react';
 import { useShopDispatch, useShopSelector } from '@/store';
-import { removeFromWishlist } from '@/store/wishlistSlice';
-import { addToCart } from '@/store/cartSlice';
+import { removeFromWishlist } from '@/store/shop/slices/wishlistSlice';
+import { addToCart } from '@/store/shop/slices/cartSlice';
 import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
 

@@ -3,7 +3,7 @@
 
 import { useEffect } from 'react';
 import { useShopDispatch } from '@/store';
-import { Route, syncWithBrowserHistory } from '@/store/navigationSlice';
+import { Route, syncWithBrowserHistory } from '@/store/shop/slices/navigationSlice';
 
 export default function BrowserHistoryHandler() {
   const dispatch = useShopDispatch();

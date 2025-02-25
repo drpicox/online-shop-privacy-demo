@@ -6,9 +6,9 @@ import { Search, X } from 'lucide-react';
 import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import Link from '@/components/Link';
-import {navigate} from "@/store/navigationSlice";
+import {navigate} from "@/store/shop/slices/navigationSlice";
 import {useShopDispatch, useShopSelector} from "@/store";
-import {selectSearchQuery, setSearchQuery} from "@/store/searchSlice";
+import {selectSearchQuery, setSearchQuery} from "@/store/shop/slices/searchSlice";
 
 export default function SearchBar() {
     const dispatch = useShopDispatch();
@@ -73,7 +73,7 @@ export default function SearchBar() {
                         onClick={handleSubmit}
                         className="w-full p-3 text-blue-600 hover:bg-gray-50 transition-colors text-sm font-medium"
                     >
-                        See all results for "{query}"
+                        See all results for &quot;{query}&quot;
                     </button>
                 </div>
             )}

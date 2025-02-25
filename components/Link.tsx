@@ -3,7 +3,7 @@
 
 import { ReactNode } from 'react';
 import { useShopDispatch, useShopSelector } from '@/store';
-import { navigate, Route, getFullPath } from '@/store/navigationSlice';
+import { navigate, Route, getFullPath } from '@/store/shop/slices/navigationSlice';
 
 interface LinkProps {
     href: Route;

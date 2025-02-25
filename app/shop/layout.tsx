@@ -11,7 +11,7 @@ export default function ShopLayout() {
     <Provider store={shopStore}>
       <BrowserHistoryHandler />
       <TrackingHandler />
-      <Router basePath="/shop" />
+      <Router />
     </Provider>
   );
 }

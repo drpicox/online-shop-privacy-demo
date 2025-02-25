@@ -6,7 +6,7 @@ import Navbar from '@/components/Navbar';
 import CategoryFilter from '@/components/CategoryFilter';
 import ProductGrid from '@/components/ProductGrid';
 import { useShopSelector } from "@/store";
-import { selectCategory } from "@/store/filterSlice";
+import { selectCategory } from "@/store/shop/slices/filterSlice";
 
 export default function ShopPage() {
   const selectedCategory = useShopSelector(selectCategory);

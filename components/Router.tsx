@@ -9,11 +9,7 @@ import LikesPage from '@/app/shop/likes/page';
 import CheckoutPage from '@/app/shop/checkout/page';
 import SearchPage from '@/app/shop/search/page';
 
-interface RouterProps {
-  basePath?: string;
-}
-
-export default function Router({ basePath = '' }: RouterProps) {
+export default function Router() {
   const { currentRoute } = useShopSelector((state) => state.navigation);
 
   switch (currentRoute) {

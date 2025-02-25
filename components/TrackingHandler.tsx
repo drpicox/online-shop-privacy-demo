@@ -7,7 +7,7 @@ import {
   updateViewport, 
   updateScroll, 
   updateCursor 
-} from '@/store/trackingSlice';
+} from '@/store/shop/slices/trackingSlice';
 import { throttle } from '@/lib/utils';
 
 export default function TrackingHandler() {
@@ -55,12 +55,13 @@ export default function TrackingHandler() {
   
   // Create throttled versions that we'll use for event listeners
   const throttledScrollHandler = useMemo(
-    () => throttle(handleScroll, 200),
+    () => throttle<typeof handleScroll>(handleScroll, 200),
     [handleScroll]
   );
   
+  // Need to use type assertion since handleMouseMove is specifically for MouseEvent
   const throttledMouseMoveHandler = useMemo(
-    () => throttle(handleMouseMove, 200),
+    () => throttle(handleMouseMove as (...args: unknown[]) => unknown, 200),
     [handleMouseMove]
   );
   

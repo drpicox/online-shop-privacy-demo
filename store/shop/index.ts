@@ -1,13 +1,22 @@
 // store/shop/index.ts
 import { configureStore } from '@reduxjs/toolkit';
-import navigationReducer from '../navigationSlice';
-import wishlistReducer from '../wishlistSlice';
-import cartReducer from '../cartSlice';
-import filterReducer from '../filterSlice';
-import searchReducer from '../searchSlice';
-import checkoutReducer from '../checkoutSlice';
-import trackingReducer from '../trackingSlice';
+import navigationReducer from './slices/navigationSlice';
+import wishlistReducer from './slices/wishlistSlice';
+import cartReducer from './slices/cartSlice';
+import filterReducer from './slices/filterSlice';
+import searchReducer from './slices/searchSlice';
+import checkoutReducer from './slices/checkoutSlice';
+import trackingReducer from './slices/trackingSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+
+// Re-export actions and selectors from slices
+export * from './slices/cartSlice';
+export * from './slices/checkoutSlice';
+export * from './slices/filterSlice';
+export * from './slices/navigationSlice';
+export * from './slices/searchSlice';
+export * from './slices/trackingSlice';
+export * from './slices/wishlistSlice';
 
 export const shopStore = configureStore({
   reducer: {

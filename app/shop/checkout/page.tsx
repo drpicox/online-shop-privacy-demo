@@ -4,8 +4,8 @@
 import Navbar from '@/components/Navbar';
 import { CheckCircle } from 'lucide-react';
 import { useShopDispatch, useShopSelector } from "@/store";
-import { navigate } from "@/store/navigationSlice";
-import { clearCart, selectCartItems, selectCartTotal } from "@/store/cartSlice";
+import { navigate } from "@/store/shop/slices/navigationSlice";
+import { clearCart, selectCartItems, selectCartTotal } from "@/store/shop/slices/cartSlice";
 import { 
     setName, 
     setCity, 
@@ -14,7 +14,7 @@ import {
     resetCheckout, 
     selectCheckoutInfo, 
     selectIsConfirmed 
-} from "@/store/checkoutSlice";
+} from "@/store/shop/slices/checkoutSlice";
 
 export default function CheckoutPage() {
     const dispatch = useShopDispatch();

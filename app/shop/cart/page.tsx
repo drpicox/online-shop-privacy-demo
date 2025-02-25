@@ -3,8 +3,8 @@
 
 import { Minus, Plus, Trash2 } from 'lucide-react';
 import { useShopDispatch, useShopSelector } from '@/store';
-import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity } from '@/store/cartSlice';
-import { navigate } from '@/store/navigationSlice';
+import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity } from '@/store/shop/slices/cartSlice';
+import { navigate } from '@/store/shop/slices/navigationSlice';
 import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
 

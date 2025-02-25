@@ -5,7 +5,7 @@ import { ShoppingCart, Heart, Menu } from 'lucide-react';
 import { useShopSelector } from '@/store';
 import Link from '@/components/Link';
 import SearchBar from './SearchBar';
-import {selectCartItemsCount} from "@/store/cartSlice";
+import {selectCartItemsCount} from "@/store/shop/slices/cartSlice";
 
 export default function Navbar() {
   const totalCartItems = useShopSelector(selectCartItemsCount);
