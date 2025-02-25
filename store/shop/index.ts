@@ -8,6 +8,7 @@ import searchReducer from './slices/searchSlice';
 import checkoutReducer from './slices/checkoutSlice';
 import trackingReducer from './slices/trackingSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import socketMiddleware from './middleware/socketMiddleware';
 
 // Re-export actions and selectors from slices
 export * from './slices/cartSlice';
@@ -28,6 +29,8 @@ export const shopStore = configureStore({
     wishlist: wishlistReducer,
     tracking: trackingReducer,
   },
+  middleware: (getDefaultMiddleware) => 
+    getDefaultMiddleware().concat(socketMiddleware),
 });
 
 export type ShopRootState = ReturnType<typeof shopStore.getState>;
