@@ -1,11 +1,14 @@
 // store/viewer/index.ts
 import { configureStore } from '@reduxjs/toolkit';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import clientsReducer from './slices/clientsSlice';
 
-// This will be expanded as the viewer functionality is implemented
+// Export actions and selectors
+export * from './slices/clientsSlice';
+
 export const viewerStore = configureStore({
   reducer: {
-    // No reducers yet
+    clients: clientsReducer,
   },
 });
 
