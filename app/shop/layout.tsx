@@ -6,6 +6,7 @@ import Router from '@/components/Router';
 import BrowserHistoryHandler from '@/components/BrowserHistoryHandler';
 import TrackingHandler from '@/components/TrackingHandler';
 import SocketInitializer from '@/components/SocketInitializer';
+import ClientIdentifier from '@/components/ClientIdentifier';
 
 export default function ShopLayout() {
   return (
@@ -13,6 +14,7 @@ export default function ShopLayout() {
       <BrowserHistoryHandler />
       <TrackingHandler />
       <SocketInitializer />
+      <ClientIdentifier />
       <Router />
     </Provider>
   );
