@@ -7,6 +7,7 @@ import CategoryFilter from '@/components/CategoryFilter';
 import ProductGrid from '@/components/ProductGrid';
 import { useShopSelector } from "@/store";
 import { selectCategory } from "@/store/shop/slices/filterSlice";
+import { shopStore } from "@/store/shop";
 import { useEffect } from 'react';
 import { initSocket } from '@/lib/socket';
 
@@ -16,8 +17,8 @@ export default function ShopPage() {
   // Ensure socket is initialized when page component mounts
   useEffect(() => {
     console.log("Shop page mounted - ensuring socket connection");
-    // Initialize socket directly on page load
-    const socket = initSocket();
+    // Initialize socket with state access
+    const socket = initSocket(shopStore.getState);
     
     return () => {
       // No need to disconnect on page unmount as we want the socket to persist

@@ -25,11 +25,19 @@ export interface ReduxAction {
   };
 }
 
+export interface ClientState {
+  clientId: string;
+  state: any;
+  timestamp: string;
+}
+
 export interface ClientsState {
   clients: Record<string, ClientInfo>;
   actions: Record<string, ReduxAction[]>;
   lastAction: ReduxAction | null;
   connected: boolean;
+  clientStates: Record<string, ClientState>;
+  pendingStateRequests: Record<string, string>; // Maps requestId to clientId
 }
 
 const initialState: ClientsState = {
@@ -37,6 +45,8 @@ const initialState: ClientsState = {
   actions: {},
   lastAction: null,
   connected: false,
+  clientStates: {},
+  pendingStateRequests: {},
 };
 
 export const clientsSlice = createSlice({
@@ -45,6 +55,29 @@ export const clientsSlice = createSlice({
   reducers: {
     setConnected: (state, action: PayloadAction<boolean>) => {
       state.connected = action.payload;
+    },
+    
+    requestClientState: (state, action: PayloadAction<{clientId: string, requestId: string}>) => {
+      const { clientId, requestId } = action.payload;
+      state.pendingStateRequests[requestId] = clientId;
+    },
+    
+    receiveClientState: (state, action: PayloadAction<ClientState>) => {
+      const { clientId, state: clientState, timestamp } = action.payload;
+      
+      // Store the client state
+      state.clientStates[clientId] = {
+        clientId,
+        state: clientState,
+        timestamp
+      };
+      
+      // Remove any pending requests for this client
+      Object.keys(state.pendingStateRequests).forEach(requestId => {
+        if (state.pendingStateRequests[requestId] === clientId) {
+          delete state.pendingStateRequests[requestId];
+        }
+      });
     },
     
     addClient: (state, action: PayloadAction<ClientInfo>) => {
@@ -154,6 +187,8 @@ export const clientsSlice = createSlice({
 // Export actions
 export const { 
   setConnected,
+  requestClientState,
+  receiveClientState,
   addClient, 
   removeClient, 
   addAction, 
@@ -186,6 +221,18 @@ export const selectLastAction = (state: ViewerRootState) => state.clients.lastAc
 export const selectIsConnected = (state: ViewerRootState) => state.clients.connected;
 export const selectActiveClientCount = (state: ViewerRootState) => {
   return Object.values(state.clients.clients).filter(client => client.isActive).length;
+};
+
+export const selectClientState = (state: ViewerRootState, clientId: string) => {
+  return state.clients.clientStates[clientId] || null;
+};
+
+export const selectHasClientState = (state: ViewerRootState, clientId: string) => {
+  return !!state.clients.clientStates[clientId];
+};
+
+export const selectIsPendingStateRequest = (state: ViewerRootState, clientId: string) => {
+  return Object.values(state.clients.pendingStateRequests).includes(clientId);
 };
 
 export default clientsSlice.reducer;

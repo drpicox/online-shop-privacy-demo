@@ -9,9 +9,13 @@ export default function ClientIdentifier() {
   
   useEffect(() => {
     // Set client name after mount (client-side only)
-    setClientName(getClientName());
+    const name = getClientName();
+    if (name) {
+      setClientName(name);
+    }
   }, []);
   
+  // Only render on client side once we have a name
   if (!clientName) return null;
   
   return (

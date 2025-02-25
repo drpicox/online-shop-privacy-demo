@@ -1,8 +1,17 @@
 // lib/viewerSocket.ts
 import { io, Socket } from 'socket.io-client';
-import { addAction, addClient, removeClient, setConnected, setActiveClients } from '@/store/viewer';
+import { 
+  addAction, 
+  addClient, 
+  removeClient, 
+  setConnected, 
+  setActiveClients,
+  requestClientState,
+  receiveClientState
+} from '@/store/viewer';
 import { Store } from '@reduxjs/toolkit';
 import { ViewerRootState } from '@/store/viewer';
+import { v4 as uuidv4 } from 'uuid';
 
 // Socket singleton instance
 let socket: Socket | null = null;
@@ -10,6 +19,12 @@ let store: Store | null = null;
 
 // Initialize socket connection for the viewer
 export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => {
+  // Only initialize on client side
+  if (typeof window === 'undefined') {
+    // Return a dummy socket object for SSR
+    return {} as Socket;
+  }
+  
   store = reduxStore;
   
   if (!socket) {
@@ -68,6 +83,16 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
       store?.dispatch(addAction(action));
     });
     
+    // Handle shop state response
+    socket.on('shop_state', (stateData) => {
+      console.log(`Received state from client: ${stateData.clientName}`);
+      store?.dispatch(receiveClientState({
+        clientId: stateData.clientId,
+        state: stateData.state,
+        timestamp: stateData.timestamp
+      }));
+    });
+    
     // Force immediate connection
     if (!socket.connected) {
       console.log('Forcing viewer socket connection');
@@ -80,3 +105,29 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
 
 // Get the socket instance
 export const getViewerSocket = (): Socket | null => socket;
+
+// Request the state of a shop client
+export const requestShopClientState = (clientId: string): string => {
+  // Only run on client side
+  if (typeof window === 'undefined') {
+    return '';
+  }
+  
+  if (!socket || !socket.connected) {
+    console.error('Cannot request state: viewer socket not connected');
+    return '';
+  }
+  
+  // Generate a unique request ID
+  const requestId = uuidv4();
+  
+  // Dispatch the action to track the pending request
+  store?.dispatch(requestClientState({ clientId, requestId }));
+  
+  // Send the request to the server
+  socket.emit('request_client_state', { clientId, requestId });
+  
+  console.log(`Requested state for client ${clientId} with request ID ${requestId}`);
+  
+  return requestId;
+};

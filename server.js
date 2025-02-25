@@ -100,6 +100,18 @@ app.prepare().then(() => {
       // Broadcast the action to all viewers
       viewerIO.emit('redux_action', action);
     });
+    
+    // Handle state responses from shop clients
+    socket.on('shop_state', (stateData) => {
+      console.log(`Received state from shop client: ${clientName} (length: ${JSON.stringify(stateData.state).length} chars)`);
+      
+      // Forward the state to all viewers
+      viewerIO.emit('shop_state', {
+        ...stateData,
+        clientId: clientId, // Ensure the correct clientId is included
+        clientName: clientName
+      });
+    });
 
     socket.on('disconnect', () => {
       // Get client info before removing
@@ -154,6 +166,28 @@ app.prepare().then(() => {
       console.log(`Viewer explicitly requested active clients - sending ${updatedClientsList.length} clients`);
       debugClients();
       socket.emit('active_clients', updatedClientsList);
+    });
+    
+    // Handle state requests
+    socket.on('request_client_state', ({ clientId, requestId }) => {
+      console.log(`Viewer requested state for client ${clientId} (request ID: ${requestId})`);
+      
+      // Find the client's socket by clientId
+      let clientSocketId = null;
+      for (const [socketId, client] of activeClients.entries()) {
+        if (client.id === clientId) {
+          clientSocketId = socketId;
+          break;
+        }
+      }
+      
+      if (clientSocketId) {
+        // Forward the request to the client
+        shopIO.to(clientSocketId).emit('request_state', requestId);
+        console.log(`Forwarded state request to client ${clientId} (socket: ${clientSocketId})`);
+      } else {
+        console.log(`Cannot find active socket for client ${clientId}`);
+      }
     });
     
     socket.on('disconnect', () => {

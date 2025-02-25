@@ -1,14 +1,17 @@
 'use client';
 
 import { useViewerSelector } from '@/store/viewer';
-import { selectActiveClients, selectClientLastAction } from '@/store/viewer';
+import { selectActiveClients, selectClientLastAction, selectHasClientState } from '@/store/viewer';
 import { ClientInfo, ReduxAction } from '@/store/viewer/slices/clientsSlice';
 import { useState } from 'react';
 import ActionViewer from './ActionViewer';
+import ClientStateViewer from './ClientStateViewer';
+
+type ViewMode = 'action' | 'state' | null;
 
 export default function ClientActionsList() {
   const activeClients = useViewerSelector(selectActiveClients);
-  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
+  const [selectedClient, setSelectedClient] = useState<{ id: string, mode: ViewMode }>({ id: '', mode: null });
   
   // Sort clients by name
   const sortedClients = [...activeClients].sort((a, b) => a.name.localeCompare(b.name));
@@ -21,48 +24,71 @@ export default function ClientActionsList() {
     );
   }
   
-  const handleClientClick = (clientId: string) => {
-    setSelectedClientId(clientId === selectedClientId ? null : clientId);
+  const handleClientClick = (clientId: string, mode: ViewMode) => {
+    if (selectedClient.id === clientId && selectedClient.mode === mode) {
+      // Close if the same client and mode is clicked
+      setSelectedClient({ id: '', mode: null });
+    } else {
+      // Otherwise select this client and mode
+      setSelectedClient({ id: clientId, mode });
+    }
   };
   
   return (
     <div>
-      <h2 className="text-xl font-bold mb-4">Active Clients with Last Actions</h2>
+      <h2 className="text-xl font-bold mb-4">Active Clients</h2>
       
       <div className="space-y-4">
-        {sortedClients.map((client: ClientInfo) => (
-          <div 
-            key={client.id} 
-            className="bg-gray-100 rounded-lg overflow-hidden"
-          >
+        {sortedClients.map((client: ClientInfo) => {
+          const hasState = useViewerSelector((state) => selectHasClientState(state, client.id));
+          const isSelected = selectedClient.id === client.id;
+          
+          return (
             <div 
-              className="p-3 bg-gray-200 cursor-pointer hover:bg-gray-300 transition-colors flex justify-between items-center"
-              onClick={() => handleClientClick(client.id)}
+              key={client.id} 
+              className="bg-gray-100 rounded-lg overflow-hidden"
             >
-              <div>
-                <span className="font-bold">{client.name}</span>
-                <span className="text-xs text-gray-600 ml-2">
-                  Connected: {new Date(client.connectedAt).toLocaleTimeString()}
-                </span>
+              <div className="p-3 bg-gray-200 flex justify-between items-center">
+                <div>
+                  <span className="font-bold">{client.name}</span>
+                  <span className="text-xs text-gray-600 ml-2">
+                    Connected: {new Date(client.connectedAt).toLocaleTimeString()}
+                  </span>
+                </div>
+                
+                <div className="flex items-center space-x-4">
+                  <div className="h-3 w-3 bg-green-500 rounded-full"></div>
+                  
+                  <button 
+                    className={`text-sm ${isSelected && selectedClient.mode === 'action' ? 'text-blue-800 font-semibold' : 'text-blue-600 hover:underline'}`}
+                    onClick={() => handleClientClick(client.id, 'action')}
+                  >
+                    Last Action
+                  </button>
+                  
+                  <button 
+                    className={`text-sm ${isSelected && selectedClient.mode === 'state' ? 'text-blue-800 font-semibold' : 'text-blue-600 hover:underline'}`}
+                    onClick={() => handleClientClick(client.id, 'state')}
+                  >
+                    {hasState ? 'View State' : 'Request State'}
+                  </button>
+                </div>
               </div>
               
-              <div className="flex items-center">
-                <div className="h-3 w-3 bg-green-500 rounded-full mr-2"></div>
-                <span 
-                  className="text-sm text-blue-600 hover:underline"
-                >
-                  {selectedClientId === client.id ? 'Hide' : 'Show'} Last Action
-                </span>
-              </div>
+              {isSelected && selectedClient.mode === 'action' && (
+                <div className="border-t border-gray-200">
+                  <ActionViewer clientId={client.id} showLastActionOnly={true} />
+                </div>
+              )}
+              
+              {isSelected && selectedClient.mode === 'state' && (
+                <div className="border-t border-gray-200">
+                  <ClientStateViewer clientId={client.id} />
+                </div>
+              )}
             </div>
-            
-            {selectedClientId === client.id && (
-              <div className="border-t border-gray-200">
-                <ActionViewer clientId={client.id} showLastActionOnly={true} />
-              </div>
-            )}
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
