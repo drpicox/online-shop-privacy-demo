@@ -49,6 +49,10 @@ export const clientsSlice = createSlice({
     
     addClient: (state, action: PayloadAction<ClientInfo>) => {
       const client = action.payload;
+      
+      console.log(`Adding client: ${client.name} (${client.id})`);
+      
+      // Store by client.id which should be unique per browser tab
       state.clients[client.id] = {
         ...client,
         lastSeen: new Date().toISOString(),

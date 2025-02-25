@@ -5,14 +5,15 @@ import { v4 as uuidv4 } from 'uuid';
 // Socket singleton instance
 let socket: Socket | null = null;
 
-// Generate a unique client ID that persists for the session
+// Generate a unique client ID for each browser session
+// Using a random UUID for each browser instance/tab
 const clientId = typeof window !== 'undefined' 
-  ? localStorage.getItem('shop_client_id') || uuidv4() 
+  ? sessionStorage.getItem('shop_client_id') || uuidv4() 
   : uuidv4();
 
-// Store client ID in localStorage to persist between page refreshes
+// Store client ID in sessionStorage to persist only for this tab/session
 if (typeof window !== 'undefined') {
-  localStorage.setItem('shop_client_id', clientId);
+  sessionStorage.setItem('shop_client_id', clientId);
 }
 
 // User-friendly identifier with timestamp + random letters
@@ -20,13 +21,21 @@ const clientName = `user_${new Date().getTime().toString().slice(-4)}_${clientId
 
 // Initialize socket connection
 export const initSocket = (): Socket => {
+  // Always create a new connection if no socket exists
   if (!socket) {
+    console.log(`Initializing shop socket for client: ${clientName}`);
+    
     // Connect to the same URL as the browser with query params for identification
     socket = io({
       query: {
         clientId,
         clientName
-      }
+      },
+      // Ensure connection happens immediately
+      autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000
     });
     
     // Setup connection event handlers
@@ -41,6 +50,11 @@ export const initSocket = (): Socket => {
     socket.on('connect_error', (error) => {
       console.error(`Socket connection error for ${clientName}:`, error);
     });
+    
+    // Force immediate connection
+    if (!socket.connected) {
+      socket.connect();
+    }
   }
   
   return socket;

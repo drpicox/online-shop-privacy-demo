@@ -27,11 +27,26 @@ app.prepare().then(() => {
   const shopIO = io.of('/'); // Default namespace
   const viewerIO = io.of('/viewer');
   
-  // Track active clients by socket ID
+  // Two ways to track clients:
+  // 1. By socket ID (for socket-specific operations)
   const activeClients = new Map();
-  // Track clients by client ID (this helps handle reconnections with the same client ID)
+  // 2. By client ID (for unique client identification)
   const clientsById = new Map();
+  // Track all viewer connections
   const viewerClients = new Set();
+  
+  // Debug function to print client info
+  const debugClients = () => {
+    console.log("\n----------- CLIENT DEBUG INFO -----------");
+    console.log(`Socket connections: ${activeClients.size}`);
+    console.log(`Unique clients: ${clientsById.size}`);
+    console.log("Client IDs:");
+    
+    for (const [id, client] of clientsById.entries()) {
+      console.log(`- ID: ${id}, Name: ${client.name}, Socket: ${client.socketId}`);
+    }
+    console.log("----------------------------------------\n");
+  };
 
   // Handle shop client connections
   shopIO.on('connection', (socket) => {
@@ -48,29 +63,25 @@ app.prepare().then(() => {
       isActive: true
     };
     
-    // Store client info by socket ID
+    // Store client info by socket ID for quick lookups
     activeClients.set(socket.id, clientInfo);
     
-    // Store/update client by client ID - this makes reconnections work properly
+    // Store client by client ID (keeping a unique record for each client ID)
     clientsById.set(clientId, clientInfo);
     
     // Log connection
     console.log(`Shop client connected: ${clientName} (${socket.id}) from ${socket.handshake.address}`);
     console.log(`Active shop clients: ${clientsById.size}`);
     
-    // Print all active clients
-    if (clientsById.size > 1) {
-      console.log('Current active shop clients:');
-      Array.from(clientsById.values()).forEach(client => {
-        console.log(`- ${client.name} (${client.socketId.slice(0, 6)}...)`);
-      });
-    }
+    // Print debug info
+    debugClients();
     
     // Notify viewers about the new client
     viewerIO.emit('client_connected', clientInfo);
     
     // Broadcast the full list of clients to all viewers to ensure they're in sync
     const allClients = Array.from(clientsById.values());
+    console.log(`Sending ${allClients.length} active clients to viewers`);
     viewerIO.emit('active_clients', allClients);
 
     // Listen for Redux actions
@@ -99,41 +110,28 @@ app.prepare().then(() => {
       const disconnectName = client.name;
       const disconnectId = client.id;
       
+      console.log(`Shop client disconnecting: ${disconnectName} (ID: ${disconnectId})`);
+      
       // Remove from socket-indexed map
       activeClients.delete(socket.id);
       
-      // Check if this client ID has other active connections
-      let hasOtherConnections = false;
+      // Always remove the clientID record since we're using sessionStorage 
+      // for client IDs (each browser tab gets a unique ID)
+      clientsById.delete(disconnectId);
       
-      // Check if there are other sockets with the same client ID still connected
-      for (const [socketId, clientData] of activeClients.entries()) {
-        if (clientData.id === disconnectId) {
-          hasOtherConnections = true;
-          break;
-        }
-      }
-      
-      // Only remove from clientsById if there are no other connections with this ID
-      if (!hasOtherConnections) {
-        clientsById.delete(disconnectId);
-        
-        // Notify viewers about the disconnected client
-        viewerIO.emit('client_disconnected', disconnectId);
-      }
+      // Notify viewers about the disconnected client
+      viewerIO.emit('client_disconnected', disconnectId);
       
       // Log disconnection
       console.log(`Shop client disconnected: ${disconnectName} (${socket.id})`);
       console.log(`Remaining active shop clients: ${clientsById.size}`);
       
-      if (clientsById.size > 0) {
-        console.log('Current active shop clients:');
-        Array.from(clientsById.values()).forEach(client => {
-          console.log(`- ${client.name} (${client.socketId.slice(0, 6)}...)`);
-        });
-      }
+      // Debug client state after disconnection
+      debugClients();
       
       // Send updated client list to all viewers
       const allClients = Array.from(clientsById.values());
+      console.log(`Sending updated list of ${allClients.length} clients to viewers`);
       viewerIO.emit('active_clients', allClients);
     });
   });
@@ -147,6 +145,8 @@ app.prepare().then(() => {
     // Send current active clients list when requested
     socket.on('get_active_clients', () => {
       const clientsList = Array.from(clientsById.values());
+      console.log(`Viewer requested active clients - sending ${clientsList.length} clients`);
+      debugClients();
       socket.emit('active_clients', clientsList);
     });
     

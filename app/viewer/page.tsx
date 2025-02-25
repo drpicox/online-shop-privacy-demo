@@ -18,7 +18,7 @@ export default function ViewerPage() {
       {/* Header */}
       <header className="mb-6">
         <div className="flex justify-between items-center">
-          <h1 className="text-3xl font-bold">Shop Tracker</h1>
+          <h1 className="text-3xl font-bold">Shop Viewer</h1>
           <ViewerStatus />
         </div>
         <p className="mt-2 text-gray-600">

@@ -13,8 +13,16 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
   store = reduxStore;
   
   if (!socket) {
-    // Connect to the same URL as the browser (default)
-    socket = io('/viewer');
+    console.log('Creating new viewer socket connection');
+    
+    // Connect to the viewer namespace with connection options
+    socket = io('/viewer', {
+      // Ensure connection happens immediately
+      autoConnect: true,
+      reconnection: true,
+      reconnectionAttempts: 10,
+      reconnectionDelay: 1000
+    });
     
     // Setup connection event handlers
     socket.on('connect', () => {
@@ -22,6 +30,7 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
       store?.dispatch(setConnected(true));
       
       // Request initial active clients list
+      console.log('Requesting active clients list from server');
       socket.emit('get_active_clients');
     });
     
@@ -37,20 +46,33 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
     
     // Handle incoming events from server
     socket.on('active_clients', (clients) => {
+      console.log(`Received ${clients.length} active clients from server`);
       store?.dispatch(setActiveClients(clients));
     });
     
     socket.on('client_connected', (client) => {
+      console.log(`Client connected: ${client.name}`);
       store?.dispatch(addClient(client));
     });
     
     socket.on('client_disconnected', (clientId) => {
+      console.log(`Client disconnected: ${clientId}`);
       store?.dispatch(removeClient(clientId));
     });
     
     socket.on('redux_action', (action) => {
+      // Only log certain actions to avoid console spam
+      if (action.type.includes('tracking')) {
+        console.log(`Received action: ${action.type} from ${action.client.name}`);
+      }
       store?.dispatch(addAction(action));
     });
+    
+    // Force immediate connection
+    if (!socket.connected) {
+      console.log('Forcing viewer socket connection');
+      socket.connect();
+    }
   }
   
   return socket;
