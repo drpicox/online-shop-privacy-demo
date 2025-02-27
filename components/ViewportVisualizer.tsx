@@ -129,8 +129,8 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
         <div
           className="absolute overflow-hidden"
           style={{
-            width: `${scaledWidth}px`,
-            height: `${scaledHeight}px`, 
+            width: `${viewport.width}px`,
+            height: `${viewport.height}px`, 
             transform: `scale(${scaleFactor})`,
             transformOrigin: '0 0',
           }}
@@ -138,14 +138,12 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
           <div 
             className="absolute overflow-hidden"
             style={{
-              width: `${viewport.width}px`,
-              height: `${viewport.height}px`,
               top: `-${scroll.y}px`,
               left: `-${scroll.x}px`,
             }}
           >
             {/* The actual client shop UI rendered at full size then scaled down */}
-            <div className="w-full" style={{ width: `${viewport.width}px` }}>
+            <div className="w-full">
               <ClientProvider clientId={clientId}>
                 <ClientShopView />
               </ClientProvider>
