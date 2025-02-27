@@ -14,6 +14,9 @@ export default function ClientStateViewer({ clientId }: ClientStateViewerProps) 
   const hasState = useViewerSelector((state) => selectHasClientState(state, clientId));
   const isPending = useViewerSelector((state) => selectIsPendingStateRequest(state, clientId));
   
+  // Get the latest actions for the client to display in UI (optional addition)
+  const clientActions = useViewerSelector((state) => state.clients.actions[clientId] || []);
+  
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   
   // Function to request the state
@@ -108,8 +111,15 @@ export default function ClientStateViewer({ clientId }: ClientStateViewerProps) 
     <div className="bg-gray-100 rounded-lg overflow-hidden">
       <div className="bg-gray-200 p-3 flex justify-between items-center">
         <h3 className="font-bold">Redux State</h3>
-        <div className="text-xs text-gray-500">
-          Last updated: {new Date(clientState?.timestamp ?? '').toLocaleTimeString()}
+        <div className="text-xs text-gray-500 flex items-center">
+          <span>
+            Last updated: {new Date(clientState?.timestamp ?? '').toLocaleTimeString()}
+            {clientActions.length > 0 && (
+              <span className="ml-2 text-green-600">
+                ({clientActions.length} action{clientActions.length !== 1 ? 's' : ''} applied since request)
+              </span>
+            )}
+          </span>
           <button
             className="ml-4 bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors"
             onClick={handleRequestState}

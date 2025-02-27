@@ -38,6 +38,8 @@ export interface ClientsState {
   connected: boolean;
   clientStates: Record<string, ClientState>;
   pendingStateRequests: Record<string, string>; // Maps requestId to clientId
+  // Stateful representation of client states that are updated with actions
+  updatedClientStates: Record<string, ClientState>;
 }
 
 const initialState: ClientsState = {
@@ -47,6 +49,7 @@ const initialState: ClientsState = {
   connected: false,
   clientStates: {},
   pendingStateRequests: {},
+  updatedClientStates: {},
 };
 
 export const clientsSlice = createSlice({
@@ -69,6 +72,13 @@ export const clientsSlice = createSlice({
       state.clientStates[clientId] = {
         clientId,
         state: clientState,
+        timestamp
+      };
+      
+      // Also store in the updated state as our new baseline
+      state.updatedClientStates[clientId] = {
+        clientId,
+        state: JSON.parse(JSON.stringify(clientState)), // Deep clone to avoid reference issues
         timestamp
       };
       
@@ -145,6 +155,29 @@ export const clientsSlice = createSlice({
       
       // Update last action
       state.lastAction = reduxAction;
+      
+      // Apply the action to the client's state if we have it
+      if (state.updatedClientStates[clientId]) {
+        try {
+          // Import dynamically to avoid circular dependencies
+          const { applyActionToState } = require('@/lib/utils');
+          
+          // Apply the action to the state
+          const updatedState = applyActionToState(
+            state.updatedClientStates[clientId].state,
+            reduxAction
+          );
+          
+          // Update the state with the new version
+          state.updatedClientStates[clientId] = {
+            ...state.updatedClientStates[clientId],
+            state: updatedState,
+            timestamp: new Date().toISOString() // Update the timestamp
+          };
+        } catch (error) {
+          console.error('Failed to apply action to client state:', error);
+        }
+      }
     },
     
     setActiveClients: (state, action: PayloadAction<ClientInfo[]>) => {
@@ -224,11 +257,12 @@ export const selectActiveClientCount = (state: ViewerRootState) => {
 };
 
 export const selectClientState = (state: ViewerRootState, clientId: string) => {
-  return state.clients.clientStates[clientId] || null;
+  // Return the updated state if available, otherwise fall back to the original state
+  return state.clients.updatedClientStates[clientId] || state.clients.clientStates[clientId] || null;
 };
 
 export const selectHasClientState = (state: ViewerRootState, clientId: string) => {
-  return !!state.clients.clientStates[clientId];
+  return !!state.clients.updatedClientStates[clientId] || !!state.clients.clientStates[clientId];
 };
 
 export const selectIsPendingStateRequest = (state: ViewerRootState, clientId: string) => {
