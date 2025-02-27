@@ -38,7 +38,6 @@ export interface ClientsState {
   connected: boolean;
   clientStates: Record<string, ClientState>;
   pendingStateRequests: Record<string, string>; // Maps requestId to clientId
-  // Stateful representation of client states that are updated with actions
   updatedClientStates: Record<string, ClientState>;
 }
 
@@ -155,29 +154,6 @@ export const clientsSlice = createSlice({
       
       // Update last action
       state.lastAction = reduxAction;
-      
-      // Apply the action to the client's state if we have it
-      if (state.updatedClientStates[clientId]) {
-        try {
-          // Import dynamically to avoid circular dependencies
-          const { applyActionToState } = require('@/lib/utils');
-          
-          // Apply the action to the state
-          const updatedState = applyActionToState(
-            state.updatedClientStates[clientId].state,
-            reduxAction
-          );
-          
-          // Update the state with the new version
-          state.updatedClientStates[clientId] = {
-            ...state.updatedClientStates[clientId],
-            state: updatedState,
-            timestamp: new Date().toISOString() // Update the timestamp
-          };
-        } catch (error) {
-          console.error('Failed to apply action to client state:', error);
-        }
-      }
     },
     
     setActiveClients: (state, action: PayloadAction<ClientInfo[]>) => {
@@ -213,6 +189,25 @@ export const clientsSlice = createSlice({
         state.actions[clientId] = [];
       });
       state.lastAction = null;
+    },
+    
+    // New action to update client state with a Redux action
+    // This will be used by the middleware
+    updateClientState: (state, action: PayloadAction<{
+      clientId: string, 
+      reduxAction: ReduxAction,
+      updatedState: any
+    }>) => {
+      const { clientId, reduxAction, updatedState } = action.payload;
+      
+      // Only apply if we have a state to update
+      if (state.updatedClientStates[clientId]) {
+        state.updatedClientStates[clientId] = {
+          ...state.updatedClientStates[clientId],
+          state: updatedState,
+          timestamp: new Date().toISOString()
+        };
+      }
     }
   },
 });
@@ -226,7 +221,8 @@ export const {
   removeClient, 
   addAction, 
   setActiveClients,
-  clearHistory
+  clearHistory,
+  updateClientState
 } = clientsSlice.actions;
 
 // Selectors
