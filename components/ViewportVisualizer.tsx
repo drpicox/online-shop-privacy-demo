@@ -56,10 +56,45 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
   const cursorViewportX = cursorInView ? scaledCursorX : null;
   const cursorViewportY = cursorInView ? scaledCursorY : null;
 
+  // Get the current route from the navigation state
+  const currentRoute = clientState?.state?.navigation?.currentRoute || 'home';
+  const basePath = clientState?.state?.navigation?.basePath || '/shop';
+  const params = clientState?.state?.navigation?.params || {};
+  
+  // Construct the URL based on the current route
+  let url = basePath;
+  if (currentRoute === 'product' && params.id) {
+    url = `${basePath}/product/${params.id}`;
+  } else if (currentRoute === 'cart') {
+    url = `${basePath}/cart`;
+  } else if (currentRoute === 'likes') {
+    url = `${basePath}/likes`;
+  } else if (currentRoute === 'checkout') {
+    url = `${basePath}/checkout`;
+  } else if (currentRoute === 'search') {
+    url = `${basePath}/search${params.q ? `?q=${params.q}` : ''}`;
+  }
+  
+  // Add the hostname to make it look like a real URL
+  const fullUrl = `https://example.com${url}`;
+
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
       <div className="mb-4">
         <h3 className="font-bold text-lg mb-2">Client Viewport Visualizer</h3>
+        
+        {/* URL display */}
+        <div className="flex items-center mb-3 bg-white rounded border border-gray-300 p-1 pr-2">
+          <div className="flex-shrink-0 flex items-center mr-1">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600 mx-1" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="flex-grow bg-gray-100 rounded px-2 py-1 text-xs overflow-x-auto">
+            {fullUrl}
+          </div>
+        </div>
+        
         <div className="grid grid-cols-2 gap-4 text-sm mb-2">
           <div>
             <span className="font-medium">Viewport: </span>
