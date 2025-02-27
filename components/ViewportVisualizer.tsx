@@ -5,6 +5,7 @@ import { selectClientState } from '@/store/viewer';
 import { useState, useEffect } from 'react';
 import { ClientProvider } from '@/store/context/ClientContext';
 import ClientShopView from './ClientShopView';
+import Router from "@/components/Router";
 
 interface ViewportVisualizerProps {
   clientId: string;
@@ -136,7 +137,7 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
           }}
         >
           <div 
-            className="absolute overflow-hidden"
+            className="absolute overflow-hidden w-full"
             style={{
               top: `-${scroll.y}px`,
               left: `-${scroll.x}px`,
@@ -145,7 +146,7 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
             {/* The actual client shop UI rendered at full size then scaled down */}
             <div className="w-full">
               <ClientProvider clientId={clientId}>
-                <ClientShopView />
+                <Router />
               </ClientProvider>
             </div>
           </div>
