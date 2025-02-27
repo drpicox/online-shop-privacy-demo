@@ -5,8 +5,6 @@ import { selectClientActions, selectLastAction, selectClientLastAction, selectHa
 import { ReduxAction } from '@/store/viewer/slices/clientsSlice';
 import { useEffect, useState } from 'react';
 import ViewportVisualizer from './ViewportVisualizer';
-import ClientStateViewer from './ClientStateViewer';
-import ClientShopView from './ClientShopView';
 import { ClientProvider } from '@/store/context/ClientContext';
 
 interface ActionViewerProps {
@@ -23,9 +21,13 @@ export default function ActionViewer({ clientId, showLastActionOnly = false }: A
   const clientActions = useViewerSelector((state) => 
     clientId ? selectClientActions(state, clientId) : []
   );
-  const clientLastAction = useViewerSelector((state) => 
-    clientId ? selectClientLastAction(state, clientId) : null
-  );
+  
+  // Memoize the client's last action to avoid infinite render loops
+  const clientLastAction = useViewerSelector((state) => {
+    if (!clientId) return null;
+    // Use the selector to get the last action by client ID
+    return selectClientLastAction(state, clientId);
+  });
   
   // Check if we have state data for this client
   const hasClientState = useViewerSelector((state) => 
@@ -34,13 +36,16 @@ export default function ActionViewer({ clientId, showLastActionOnly = false }: A
   
   // Use either the selected client's actions or the last action across all clients
   useEffect(() => {
+    // Compute the actions to show based on props
     if (clientId) {
       if (showLastActionOnly && clientLastAction) {
         // Show only the last action for this client
         setActions([clientLastAction]);
-      } else {
+      } else if (clientActions && clientActions.length > 0) {
         // Show all actions for this client
         setActions(clientActions);
+      } else {
+        setActions([]);
       }
     } else if (lastAction) {
       // Show the most recent action across all clients

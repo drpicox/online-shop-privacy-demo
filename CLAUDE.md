@@ -13,6 +13,10 @@ The objective is to demonstrate how user actions in e-commerce platforms can be 
 - `npm run start` - Start production server
 - `npm run lint` - Run ESLint
 
+## Workflow Guidelines
+- Never commit changes using Claude - only the developer should commit
+- Make all suggested changes and fixes, but leave git operations to the user
+
 ## Architecture
 - **Application Structure**: 
   - `/app/shop` - Shop application
