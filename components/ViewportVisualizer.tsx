@@ -44,16 +44,17 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
   const scaledCursorX = cursor.x * scaleFactor;
   const scaledCursorY = cursor.y * scaleFactor;
 
-  // Calculate if cursor is within the visible viewport area
+  // The cursor is already relative to the viewport (window), not the content
+  // So we just need to check if it's within the viewport bounds
   const cursorInView = 
-    scaledCursorX >= scaledScrollX && 
-    scaledCursorX <= scaledScrollX + scaledWidth &&
-    scaledCursorY >= scaledScrollY && 
-    scaledCursorY <= scaledScrollY + scaledHeight;
+    scaledCursorX >= 0 && 
+    scaledCursorX <= scaledWidth &&
+    scaledCursorY >= 0 && 
+    scaledCursorY <= scaledHeight;
 
-  // We need to calculate the position relative to the viewport "window"
-  const cursorViewportX = cursorInView ? scaledCursorX - scaledScrollX : null;
-  const cursorViewportY = cursorInView ? scaledCursorY - scaledScrollY : null;
+  // No need to adjust for scroll since cursor coordinates are already viewport-relative
+  const cursorViewportX = cursorInView ? scaledCursorX : null;
+  const cursorViewportY = cursorInView ? scaledCursorY : null;
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
@@ -106,6 +107,21 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
           <div className="grid grid-rows-12 h-full w-full absolute top-0 left-0">
             {Array.from({ length: 12 }).map((_, i) => (
               <div key={i} className="border-b border-gray-200"></div>
+            ))}
+          </div>
+          
+          {/* Page section labels */}
+          <div className="absolute top-2 left-2 bg-blue-100 px-2 py-1 rounded text-xs border border-blue-300">Header</div>
+          <div className="absolute top-[20%] left-2 bg-green-100 px-2 py-1 rounded text-xs border border-green-300">Navigation</div>
+          <div className="absolute top-[40%] left-2 bg-purple-100 px-2 py-1 rounded text-xs border border-purple-300">Products</div>
+          <div className="absolute top-[75%] left-2 bg-yellow-100 px-2 py-1 rounded text-xs border border-yellow-300">Footer</div>
+          
+          {/* Abstract product grid representation */}
+          <div className="absolute top-[45%] left-[10%] right-[10%] grid grid-cols-3 gap-2">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="h-10 bg-white rounded border border-gray-300 flex items-center justify-center text-xs text-gray-400">
+                Product {i+1}
+              </div>
             ))}
           </div>
         </div>
