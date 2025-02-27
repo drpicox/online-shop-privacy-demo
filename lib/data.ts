@@ -162,7 +162,7 @@ export const products: Product[] = [
   }
 ].map(p => ({
   ...p,
-  image: `/products/dt-flat-${p.name.toLowerCase().replace(/ /g, '-')}.jpg`
+  image: `/products/dt-ferret-${p.name.toLowerCase().replace(/ /g, '-')}.jpg`
 }));
 
 export const categories = ["All", "Shoes", "Outerwear", "T-Shirts", "Accessories"];

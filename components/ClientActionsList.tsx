@@ -1,8 +1,8 @@
 'use client';
 
 import { useViewerSelector } from '@/store/viewer';
-import { selectActiveClients, selectClientLastAction, selectHasClientState } from '@/store/viewer';
-import { ClientInfo, ReduxAction } from '@/store/viewer/slices/clientsSlice';
+import { selectActiveClients, selectHasClientState } from '@/store/viewer';
+import { ClientInfo } from '@/store/viewer/slices/clientsSlice';
 import { useState } from 'react';
 import ActionViewer from './ActionViewer';
 import ClientStateViewer from './ClientStateViewer';
@@ -12,6 +12,13 @@ type ViewMode = 'action' | 'state' | null;
 export default function ClientActionsList() {
   const activeClients = useViewerSelector(selectActiveClients);
   const [selectedClient, setSelectedClient] = useState<{ id: string, mode: ViewMode }>({ id: '', mode: null });
+  // Get client states from store
+  const allClientStates = useViewerSelector(state => 
+    activeClients.reduce((acc, client) => {
+      acc[client.id] = selectHasClientState(state, client.id);
+      return acc;
+    }, {} as Record<string, boolean>)
+  );
   
   // Sort clients by name
   const sortedClients = [...activeClients].sort((a, b) => a.name.localeCompare(b.name));
@@ -33,14 +40,14 @@ export default function ClientActionsList() {
       setSelectedClient({ id: clientId, mode });
     }
   };
-  
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-4">Active Clients</h2>
       
       <div className="space-y-4">
         {sortedClients.map((client: ClientInfo) => {
-          const hasState = useViewerSelector((state) => selectHasClientState(state, client.id));
+          const hasState = allClientStates[client.id];
           const isSelected = selectedClient.id === client.id;
           
           return (

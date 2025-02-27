@@ -11,10 +11,17 @@ interface ActionViewerProps {
 }
 
 export default function ActionViewer({ clientId, showLastActionOnly = false }: ActionViewerProps) {
-  const clientActions = clientId ? useViewerSelector((state) => selectClientActions(state, clientId)) : [];
-  const clientLastAction = clientId ? useViewerSelector((state) => selectClientLastAction(state, clientId)) : null;
+  // Always call hooks unconditionally at the top level
   const lastAction = useViewerSelector(selectLastAction);
   const [actions, setActions] = useState<ReduxAction[]>([]);
+  
+  // Use selectors with null checks inside the selector function instead of conditional hook calls
+  const clientActions = useViewerSelector((state) => 
+    clientId ? selectClientActions(state, clientId) : []
+  );
+  const clientLastAction = useViewerSelector((state) => 
+    clientId ? selectClientLastAction(state, clientId) : null
+  );
   
   // Use either the selected client's actions or the last action across all clients
   useEffect(() => {
