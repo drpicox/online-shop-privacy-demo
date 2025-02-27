@@ -113,14 +113,6 @@ export default function ActionViewer({ clientId, showLastActionOnly = false }: A
         {clientId && hasClientState && (
           <ViewportVisualizer clientId={clientId} />
         )}
-        
-        {/* Client Shop View - Show the client's shop UI */}
-        {clientId && hasClientState && (
-          <div className="mt-6">
-            <h3 className="font-bold text-lg mb-3">Client Shop UI</h3>
-            <ClientShopView />
-          </div>
-        )}
       </div>
     </ClientProvider>
   );

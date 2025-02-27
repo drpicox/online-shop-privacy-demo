@@ -3,6 +3,8 @@
 import { useViewerSelector } from '@/store/viewer';
 import { selectClientState } from '@/store/viewer';
 import { useState, useEffect } from 'react';
+import { ClientProvider } from '@/store/context/ClientContext';
+import ClientShopView from './ClientShopView';
 
 interface ViewportVisualizerProps {
   clientId: string;
@@ -123,41 +125,31 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
           height: scaledHeight + 'px',
         }}
       >
-        {/* This is the "page" content that scrolls */}
+        {/* Actual shop content that's scaled and scrollable */}
         <div
-          className="absolute bg-gradient-to-br from-gray-50 to-gray-100"
+          className="absolute overflow-hidden"
           style={{
-            width: `${scaledWidth * 3}px`, // Make content area larger than viewport
-            height: `${scaledHeight * 3}px`, // to demonstrate scrolling
-            top: `-${scaledScrollY}px`,
-            left: `-${scaledScrollX}px`,
+            width: `${scaledWidth}px`,
+            height: `${scaledHeight}px`, 
+            transform: `scale(${scaleFactor})`,
+            transformOrigin: '0 0',
           }}
         >
-          {/* Grid lines to help visualize scrolling */}
-          <div className="grid grid-cols-12 h-full">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="border-r border-gray-200"></div>
-            ))}
-          </div>
-          <div className="grid grid-rows-12 h-full w-full absolute top-0 left-0">
-            {Array.from({ length: 12 }).map((_, i) => (
-              <div key={i} className="border-b border-gray-200"></div>
-            ))}
-          </div>
-          
-          {/* Page section labels */}
-          <div className="absolute top-2 left-2 bg-blue-100 px-2 py-1 rounded text-xs border border-blue-300">Header</div>
-          <div className="absolute top-[20%] left-2 bg-green-100 px-2 py-1 rounded text-xs border border-green-300">Navigation</div>
-          <div className="absolute top-[40%] left-2 bg-purple-100 px-2 py-1 rounded text-xs border border-purple-300">Products</div>
-          <div className="absolute top-[75%] left-2 bg-yellow-100 px-2 py-1 rounded text-xs border border-yellow-300">Footer</div>
-          
-          {/* Abstract product grid representation */}
-          <div className="absolute top-[45%] left-[10%] right-[10%] grid grid-cols-3 gap-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-10 bg-white rounded border border-gray-300 flex items-center justify-center text-xs text-gray-400">
-                Product {i+1}
-              </div>
-            ))}
+          <div 
+            className="absolute overflow-hidden"
+            style={{
+              width: `${viewport.width}px`,
+              height: `${viewport.height}px`,
+              top: `-${scroll.y}px`,
+              left: `-${scroll.x}px`,
+            }}
+          >
+            {/* The actual client shop UI rendered at full size then scaled down */}
+            <div className="w-full" style={{ width: `${viewport.width}px` }}>
+              <ClientProvider clientId={clientId}>
+                <ClientShopView />
+              </ClientProvider>
+            </div>
           </div>
         </div>
 

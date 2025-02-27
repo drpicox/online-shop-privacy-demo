@@ -12,13 +12,14 @@ type ViewMode = 'action' | 'state' | null;
 export default function ClientActionsList() {
   const activeClients = useViewerSelector(selectActiveClients);
   const [selectedClient, setSelectedClient] = useState<{ id: string, mode: ViewMode }>({ id: '', mode: null });
-  // Get client states from store
-  const allClientStates = useViewerSelector(state => 
-    activeClients.reduce((acc, client) => {
+  // Get client states from store - get all in a single selector to avoid dependencies
+  const allClientStates = useViewerSelector(state => {
+    const clients = selectActiveClients(state);
+    return clients.reduce((acc, client) => {
       acc[client.id] = selectHasClientState(state, client.id);
       return acc;
-    }, {} as Record<string, boolean>)
-  );
+    }, {} as Record<string, boolean>);
+  });
   
   // Sort clients by name
   const sortedClients = [...activeClients].sort((a, b) => a.name.localeCompare(b.name));
