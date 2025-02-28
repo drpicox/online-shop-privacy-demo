@@ -52,6 +52,17 @@ export default function TrackingHandler() {
       y: e.clientY
     }));
   }, [dispatch]);
+
+  // Touch handler for cursor tracking
+  const handleTouchMove = useCallback((e: TouchEvent) => {
+    if (e.touches.length > 0) {
+      const touch = e.touches[0]; // Get the first touch point
+      dispatch(updateCursor({
+        x: touch.clientX,
+        y: touch.clientY
+      }));
+    }
+  }, [dispatch]);
   
   // Create throttled versions that we'll use for event listeners
   const throttledScrollHandler = useMemo(
@@ -63,6 +74,12 @@ export default function TrackingHandler() {
   const throttledMouseMoveHandler = useMemo(
     () => throttle(handleMouseMove as (...args: unknown[]) => unknown, 200),
     [handleMouseMove]
+  );
+
+  // Throttled touch handler
+  const throttledTouchMoveHandler = useMemo(
+    () => throttle(handleTouchMove as (...args: unknown[]) => unknown, 200),
+    [handleTouchMove]
   );
   
   // Track scroll position
@@ -78,7 +95,7 @@ export default function TrackingHandler() {
     };
   }, [throttledScrollHandler]);
   
-  // Track cursor position
+  // Track cursor position with mouse
   useEffect(() => {
     window.addEventListener('mousemove', throttledMouseMoveHandler);
     
@@ -86,6 +103,17 @@ export default function TrackingHandler() {
       window.removeEventListener('mousemove', throttledMouseMoveHandler);
     };
   }, [throttledMouseMoveHandler]);
+  
+  // Track cursor position with touch
+  useEffect(() => {
+    window.addEventListener('touchmove', throttledTouchMoveHandler);
+    window.addEventListener('touchstart', throttledTouchMoveHandler);
+    
+    return () => {
+      window.removeEventListener('touchmove', throttledTouchMoveHandler);
+      window.removeEventListener('touchstart', throttledTouchMoveHandler);
+    };
+  }, [throttledTouchMoveHandler]);
   
   // Component has no UI
   return null;
