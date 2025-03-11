@@ -65,20 +65,22 @@ export default function TrackingHandler() {
   }, [dispatch]);
   
   // Create throttled versions that we'll use for event listeners
+  // Reduced frequency for cursor updates to minimize re-renders (300ms instead of 200ms)
   const throttledScrollHandler = useMemo(
-    () => throttle<typeof handleScroll>(handleScroll, 200),
+    () => throttle<typeof handleScroll>(handleScroll, 300),
     [handleScroll]
   );
   
   // Need to use type assertion since handleMouseMove is specifically for MouseEvent
+  // Use higher throttle for mouse movements since they happen very frequently
   const throttledMouseMoveHandler = useMemo(
-    () => throttle(handleMouseMove as (...args: unknown[]) => unknown, 200),
+    () => throttle(handleMouseMove as (...args: unknown[]) => unknown, 300),
     [handleMouseMove]
   );
 
-  // Throttled touch handler
+  // Throttled touch handler (same as mouse move)
   const throttledTouchMoveHandler = useMemo(
-    () => throttle(handleTouchMove as (...args: unknown[]) => unknown, 200),
+    () => throttle(handleTouchMove as (...args: unknown[]) => unknown, 300),
     [handleTouchMove]
   );
   

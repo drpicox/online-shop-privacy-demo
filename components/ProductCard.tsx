@@ -6,18 +6,17 @@ import { Product } from '@/types';
 import { Card, CardContent } from '@/components/ui/card';
 import Link from '@/components/Link';
 import { useShopDispatch, useShopSelector } from '@/store';
-import { addToWishlist, removeFromWishlist } from '@/store/shop/slices/wishlistSlice';
+import { addToWishlist, removeFromWishlist, selectIsInWishlist } from '@/store/shop/slices/wishlistSlice';
 import {addToCart} from "@/store/shop/slices/cartSlice";
+import React from 'react';
 
 interface ProductCardProps {
     product: Product;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+function ProductCard({ product }: ProductCardProps) {
     const dispatch = useShopDispatch();
-    const liked = useShopSelector(state =>
-        state.wishlist.items.some(item => item.id === product.id)
-    );
+    const liked = useShopSelector(state => selectIsInWishlist(state, product.id));
 
     const handleLikeClick = (e: React.MouseEvent) => {
         e.preventDefault(); // Prevent the Link from triggering
@@ -67,3 +66,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         </Link>
     );
 }
+
+// Memoize the component to prevent re-renders when parent re-renders
+export default React.memo(ProductCard);

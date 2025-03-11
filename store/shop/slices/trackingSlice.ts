@@ -63,6 +63,28 @@ const trackingSlice = createSlice({
 export const { initializeClientId, updateViewport, updateScroll, updateCursor } = trackingSlice.actions;
 export default trackingSlice.reducer;
 
+// Full tracking selector (use sparingly to avoid unnecessary re-renders)
 export function selectTracking(state: { tracking: TrackingState }) {
   return state.tracking;
+}
+
+// Specific selectors for granular component updates
+export function selectViewportSize(state: { tracking: TrackingState }) {
+  return state.tracking.viewport;
+}
+
+export function selectViewportWidth(state: { tracking: TrackingState }) {
+  return state.tracking.viewport.width;
+}
+
+export function selectViewportHeight(state: { tracking: TrackingState }) {
+  return state.tracking.viewport.height;
+}
+
+export function selectScrollPosition(state: { tracking: TrackingState }) {
+  return state.tracking.scroll;
+}
+
+export function selectCursorPosition(state: { tracking: TrackingState }) {
+  return state.tracking.cursor;
 }

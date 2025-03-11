@@ -3,7 +3,8 @@
 
 import { Product } from '@/types';
 import ProductCard from './ProductCard';
-import { useShopSelector, selectTracking } from '@/store/shop';
+import { useShopSelector } from '@/store/shop';
+import { selectViewportWidth } from '@/store/shop/slices/trackingSlice';
 import { useMemo } from 'react';
 
 interface ProductGridProps {
@@ -11,28 +12,33 @@ interface ProductGridProps {
 }
 
 export default function ProductGrid({ products }: ProductGridProps) {
-  // Get viewport width from Redux
-  const { viewport } = useShopSelector(selectTracking);
+  // Get viewport width from Redux using specific selector
+  const viewportWidth = useShopSelector(selectViewportWidth);
   
   // Determine grid columns based on viewport width
   const gridCols = useMemo(() => {
-    if (viewport.width >= 1024) {
+    if (viewportWidth >= 1024) {
       return 'grid-cols-4'; // lg: >= 1024px
-    } else if (viewport.width >= 640) {
+    } else if (viewportWidth >= 640) {
       return 'grid-cols-2'; // sm: >= 640px
     } else {
       return 'grid-cols-1'; // default: < 640px
     }
-  }, [viewport.width]);
+  }, [viewportWidth]);
   
+  // Memoize the product cards to prevent unnecessary re-renders
+  const productCards = useMemo(() => {
+    return products.map((product) => (
+      <ProductCard
+        key={product.id}
+        product={product}
+      />
+    ));
+  }, [products]);
+
   return (
     <div className={`grid ${gridCols} gap-6`}>
-      {products.map((product) => (
-        <ProductCard
-          key={product.id}
-          product={product}
-        />
-      ))}
+      {productCards}
     </div>
   );
 }
