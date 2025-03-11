@@ -1,29 +1,55 @@
 'use client';
 
 import Link from "next/link";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import ViewerSocketInitializer from "@/components/ViewerSocketInitializer";
 import ViewerStatus from "@/components/ViewerStatus";
 import ClientsList from "@/components/ClientsList";
 import ActionViewer from "@/components/ActionViewer";
 import ClientActionsList from "@/components/ClientActionsList";
+import AllClientsVisualizer from "@/components/AllClientsVisualizer";
 import { initViewerSocket } from "@/lib/viewerSocket";
 import { viewerStore } from "@/store/viewer";
 
+type ViewMode = 'lastActions' | 'clientHistory' | 'allClients';
+
 export default function ViewerPage() {
+  const [viewMode, setViewMode] = useState<ViewMode>('lastActions');
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
+  
+  // Handle tab switching
+  const handleTabChange = React.useCallback((mode: ViewMode) => {
+    setViewMode(mode);
+    if (mode === 'clientHistory' && !selectedClientId) {
+      setSelectedClientId("");
+    } else if (mode !== 'clientHistory') {
+      setSelectedClientId(undefined);
+    }
+  }, [selectedClientId]);
   
   // Initialize socket connection in the page component as well
   useEffect(() => {
     console.log("Viewer page mounted - ensuring socket connection");
     
     // Initialize viewer socket directly
-    const socket = initViewerSocket(viewerStore);
+    initViewerSocket(viewerStore);
+    
+    // Listen for tab switch events from components
+    const handleTabSwitch = (event: CustomEvent) => {
+      const { mode, clientId } = event.detail;
+      handleTabChange(mode as ViewMode);
+      if (clientId) {
+        setSelectedClientId(clientId);
+      }
+    };
+    
+    window.addEventListener('viewerSwitchTab', handleTabSwitch as EventListener);
     
     return () => {
       // We don't disconnect on unmount to maintain the connection
+      window.removeEventListener('viewerSwitchTab', handleTabSwitch as EventListener);
     };
-  }, []);
+  }, [handleTabChange]);
   
   return (
     <div className="min-h-screen flex flex-col p-6">
@@ -47,18 +73,26 @@ export default function ViewerPage() {
           <ul className="flex -mb-px">
             <li className="mr-1">
               <button 
-                onClick={() => setSelectedClientId(undefined)}
-                className={`inline-block py-2 px-4 text-sm font-medium ${!selectedClientId ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                onClick={() => handleTabChange('lastActions')}
+                className={`inline-block py-2 px-4 text-sm font-medium ${viewMode === 'lastActions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
               >
                 Last Actions
               </button>
             </li>
             <li className="mr-1">
               <button 
-                onClick={() => selectedClientId ? null : setSelectedClientId("")}
-                className={`inline-block py-2 px-4 text-sm font-medium ${selectedClientId !== undefined ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+                onClick={() => handleTabChange('clientHistory')}
+                className={`inline-block py-2 px-4 text-sm font-medium ${viewMode === 'clientHistory' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
               >
                 Client History
+              </button>
+            </li>
+            <li className="mr-1">
+              <button 
+                onClick={() => handleTabChange('allClients')}
+                className={`inline-block py-2 px-4 text-sm font-medium ${viewMode === 'allClients' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-600 hover:text-blue-600'}`}
+              >
+                All Clients
               </button>
             </li>
           </ul>
@@ -66,18 +100,18 @@ export default function ViewerPage() {
       </div>
       
       {/* Main content */}
-      {selectedClientId !== undefined ? (
+      {viewMode === 'clientHistory' ? (
         <div className="flex flex-1 gap-6">
           {/* Left sidebar - Client list */}
           <div className="w-1/3">
             <ClientsList 
               onSelectClient={setSelectedClientId} 
-              selectedClientId={selectedClientId} 
+              selectedClientId={selectedClientId || ""} 
             />
             
             <div className="mt-4 flex justify-between">
               <button 
-                onClick={() => setSelectedClientId(undefined)}
+                onClick={() => handleTabChange('lastActions')}
                 className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
               >
                 Show Last Actions
@@ -94,7 +128,20 @@ export default function ViewerPage() {
           
           {/* Right side - Action details */}
           <div className="w-2/3">
-            <ActionViewer clientId={selectedClientId} />
+            <ActionViewer clientId={selectedClientId || ""} />
+          </div>
+        </div>
+      ) : viewMode === 'allClients' ? (
+        <div>
+          <AllClientsVisualizer />
+          
+          <div className="mt-6 flex justify-end">
+            <Link 
+              href="/" 
+              className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors"
+            >
+              Back to Home
+            </Link>
           </div>
         </div>
       ) : (

@@ -2,18 +2,20 @@
 
 import { useViewerSelector } from '@/store/viewer';
 import { selectClientState } from '@/store/viewer';
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ClientProvider } from '@/store/context/ClientContext';
-import ClientShopView from './ClientShopView';
 import Router from "@/components/Router";
 
 interface ViewportVisualizerProps {
   clientId: string;
+  compact?: boolean;
 }
 
-export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps) {
+export default function ViewportVisualizer({ clientId, compact = false }: ViewportVisualizerProps) {
   const clientState = useViewerSelector((state) => selectClientState(state, clientId));
   const [isLoading, setIsLoading] = useState(true);
+  const [scaleFactor, setScaleFactor] = useState(compact ? 0.3 : 0.5);
+  const containerRef = React.useRef<HTMLDivElement>(null);
 
   // States to hold tracking data
   const [viewport, setViewport] = useState({ width: 0, height: 0 });
@@ -30,6 +32,59 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
     }
   }, [clientState]);
 
+  // Calculate scale factor based on container width
+  useEffect(() => {
+    if (viewport.width === 0) return;
+    
+    const calculateScale = () => {
+      if (!containerRef.current) return;
+      
+      const containerWidth = containerRef.current.clientWidth;
+      // Add padding to account for container padding and border
+      const paddingOffset = compact ? 24 : 48; // 12px or 24px padding on each side
+      const availableWidth = containerWidth - paddingOffset;
+      
+      // Calculate scale that would fit the viewport in the available width
+      let newScale = availableWidth / viewport.width;
+      
+      // For compact mode, we need to ensure it doesn't get too big or too small
+      if (compact) {
+        // In grid view, cap at 0.4 to ensure it stays small enough
+        newScale = Math.min(newScale, 0.4); 
+        newScale = Math.max(newScale, 0.2); // Don't go smaller than 20%
+      } else {
+        // In single view, allow more flexibility but still with caps
+        newScale = Math.min(newScale, 0.75); // Don't scale larger than 75%
+        newScale = Math.max(newScale, 0.3);  // Don't go smaller than 30%
+      }
+      
+      setScaleFactor(newScale);
+    };
+    
+    // Initial calculation
+    calculateScale();
+    
+    // Create a ResizeObserver to watch the container size
+    const resizeObserver = new ResizeObserver(() => {
+      calculateScale();
+    });
+    
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
+    
+    // Also listen for window resize as a fallback
+    window.addEventListener('resize', calculateScale);
+    
+    return () => {
+      if (containerRef.current) {
+        resizeObserver.unobserve(containerRef.current);
+      }
+      resizeObserver.disconnect();
+      window.removeEventListener('resize', calculateScale);
+    };
+  }, [viewport.width, compact]);
+
   if (isLoading || !clientState?.state?.tracking) {
     return (
       <div className="bg-gray-100 p-4 rounded-lg">
@@ -38,8 +93,6 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
     );
   }
 
-  // Define scale factor for the visualization (50%)
-  const scaleFactor = 0.5;
   const scaledWidth = viewport.width * scaleFactor;
   const scaledHeight = viewport.height * scaleFactor;
   const scaledScrollX = scroll.x * scaleFactor;
@@ -82,50 +135,62 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
   const fullUrl = `https://example.com${url}`;
 
   return (
-    <div className="bg-gray-100 p-4 rounded-lg">
-      <div className="mb-4">
-        <h3 className="font-bold text-lg mb-2">Client Viewport Visualizer</h3>
-        
-        {/* URL display */}
-        <div className="flex items-center mb-3 bg-white rounded border border-gray-300 p-1 pr-2">
-          <div className="flex-shrink-0 flex items-center mr-1">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600 mx-1" viewBox="0 0 20 20" fill="currentColor">
-              <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-            </svg>
+    <div ref={containerRef} className={`bg-gray-100 ${compact ? 'p-2' : 'p-4'} rounded-lg`}>
+      {!compact && (
+        <div className="mb-4">
+          <h3 className="font-bold text-lg mb-2">Client Viewport Visualizer</h3>
+          
+          {/* URL display */}
+          <div className="flex items-center mb-3 bg-white rounded border border-gray-300 p-1 pr-2">
+            <div className="flex-shrink-0 flex items-center mr-1">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-gray-600 mx-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="flex-grow bg-gray-100 rounded px-2 py-1 text-xs overflow-x-auto">
+              {fullUrl}
+            </div>
           </div>
-          <div className="flex-grow bg-gray-100 rounded px-2 py-1 text-xs overflow-x-auto">
-            {fullUrl}
+          
+          <div className="grid grid-cols-2 gap-4 text-sm mb-2">
+            <div>
+              <span className="font-medium">Viewport: </span>
+              <span className="text-gray-600">{viewport.width}x{viewport.height}px</span>
+            </div>
+            <div>
+              <span className="font-medium">Scroll: </span>
+              <span className="text-gray-600">({scroll.x}, {scroll.y})</span>
+            </div>
+            <div>
+              <span className="font-medium">Cursor: </span>
+              <span className="text-gray-600">({cursor.x}, {cursor.y})</span>
+            </div>
+            <div>
+              <span className="font-medium">Scale: </span>
+              <span className="text-gray-600">{scaleFactor * 100}%</span>
+            </div>
           </div>
         </div>
-        
-        <div className="grid grid-cols-2 gap-4 text-sm mb-2">
-          <div>
-            <span className="font-medium">Viewport: </span>
-            <span className="text-gray-600">{viewport.width}x{viewport.height}px</span>
-          </div>
-          <div>
-            <span className="font-medium">Scroll: </span>
-            <span className="text-gray-600">({scroll.x}, {scroll.y})</span>
-          </div>
-          <div>
-            <span className="font-medium">Cursor: </span>
-            <span className="text-gray-600">({cursor.x}, {cursor.y})</span>
-          </div>
-          <div>
-            <span className="font-medium">Scale: </span>
-            <span className="text-gray-600">{scaleFactor * 100}%</span>
+      )}
+      
+      {compact && (
+        <div className="mb-2 text-xs">
+          <div className="flex justify-between">
+            <span>{viewport.width}x{viewport.height}px</span>
+            <span>Scale: {scaleFactor * 100}%</span>
           </div>
         </div>
-      </div>
+      )}
 
       {/* The document representation */}
-      <div 
-        className="relative border border-gray-300 bg-white overflow-hidden"
-        style={{ 
-          width: scaledWidth + 'px', 
-          height: scaledHeight + 'px',
-        }}
-      >
+      <div className="flex justify-center">
+        <div 
+          className="relative border border-gray-300 bg-white overflow-hidden"
+          style={{ 
+            width: scaledWidth + 'px', 
+            height: scaledHeight + 'px',
+          }}
+        >
         {/* Actual shop content that's scaled and scrollable */}
         <div
           className="absolute overflow-hidden"
@@ -167,14 +232,15 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
         {/* Viewport frame indicator */}
         <div className="absolute inset-0 pointer-events-none border-2 border-blue-500 z-20" />
       </div>
+      </div>
 
       {/* Scrollbars visualization */}
-      <div className="flex mt-1">
-        {/* Horizontal scrollbar */}
-        <div 
-          className="relative mr-3 h-2 bg-gray-300 rounded-full flex-grow"
-          style={{ width: `${scaledWidth}px` }}
-        >
+      <div className="flex justify-center mt-1">
+        <div className="flex" style={{ width: `${scaledWidth}px` }}>
+          {/* Horizontal scrollbar */}
+          <div 
+            className="relative mr-3 h-2 bg-gray-300 rounded-full flex-grow"
+          >
           <div 
             className="absolute h-full bg-gray-500 rounded-full"
             style={{
@@ -197,11 +263,19 @@ export default function ViewportVisualizer({ clientId }: ViewportVisualizerProps
             }}
           />
         </div>
+        </div>
       </div>
       
-      <div className="mt-4 text-xs text-gray-500">
-        <p>Last updated: {new Date(clientState?.timestamp ?? '').toLocaleTimeString()}</p>
-      </div>
+      {!compact && (
+        <div className="mt-4 text-xs text-gray-500">
+          <p>Last updated: {new Date(clientState?.timestamp ?? '').toLocaleTimeString()}</p>
+        </div>
+      )}
+      {compact && (
+        <div className="mt-1 text-xs text-gray-500 text-right">
+          <p>{new Date(clientState?.timestamp ?? '').toLocaleTimeString()}</p>
+        </div>
+      )}
     </div>
   );
 }
