@@ -14,13 +14,21 @@ export default function AllClientsVisualizer() {
 
   useEffect(() => {
     // Update the list of clients to show when activeClients changes
-    setClientsInView(activeClients.map(client => client.id));
+    // Filter out unnamed clients (those not starting with "user_")
+    const validClients = activeClients.filter(client => client.name.startsWith('user_'));
+    setClientsInView(validClients.map(client => client.id));
   }, [activeClients]);
 
-  if (activeClients.length === 0) {
+  // Check if we have valid clients (those starting with "user_")
+  const validClientsCount = clientsInView.length;
+  
+  if (validClientsCount === 0) {
     return (
       <div className="bg-gray-100 p-6 rounded-lg">
-        <p className="text-center text-gray-600">No active clients connected</p>
+        <p className="text-center text-gray-600">No active shop clients connected</p>
+        <p className="text-center text-sm text-gray-500 mt-2">
+          (Note: connections without proper client IDs are filtered out)
+        </p>
       </div>
     );
   }
@@ -36,7 +44,10 @@ export default function AllClientsVisualizer() {
         <div>
           <h2 className="text-xl font-bold">All Connected Clients</h2>
           <p className="text-sm text-gray-600">
-            Showing all {activeClients.length} active client sessions
+            Showing {validClientsCount} active client sessions
+            {activeClients.length > validClientsCount && (
+              <span className="text-gray-500"> (filtered {activeClients.length - validClientsCount} unnamed clients)</span>
+            )}
           </p>
         </div>
         {expandedClient && (
