@@ -47,10 +47,10 @@ function getOrInitClientName(): string {
 }
 
 // This will be set when we initialize with the store
-let getState: (() => any) | null = null;
+let getState: (() => Record<string, unknown>) | null = null;
 
 // Initialize socket connection
-export const initSocket = (storeGetState?: () => any): Socket => {
+export const initSocket = (storeGetState?: () => Record<string, unknown>): Socket => {
   // Only initialize on client side
   if (typeof window === 'undefined') {
     // Return a dummy socket object for SSR
@@ -100,7 +100,7 @@ export const initSocket = (storeGetState?: () => any): Socket => {
     socket.on('request_state', (requestId) => {
       console.log(`Received state request with ID: ${requestId}`);
       
-      if (getState) {
+      if (getState && socket) {
         // Get the current Redux state
         const state = getState();
         
@@ -115,7 +115,7 @@ export const initSocket = (storeGetState?: () => any): Socket => {
         
         console.log('Sent state to viewer');
       } else {
-        console.error('Cannot provide state: getState function not available');
+        console.error('Cannot provide state: getState function or socket not available');
       }
     });
     
@@ -129,7 +129,7 @@ export const initSocket = (storeGetState?: () => any): Socket => {
 };
 
 // Send Redux action to server
-export const sendReduxAction = (action: any): void => {
+export const sendReduxAction = (action: Record<string, unknown>): void => {
   // Only run on client side
   if (typeof window === 'undefined') {
     return;

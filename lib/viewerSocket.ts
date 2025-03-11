@@ -46,7 +46,9 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
       
       // Request initial active clients list
       console.log('Requesting active clients list from server');
-      socket.emit('get_active_clients');
+      if (socket) {
+        socket.emit('get_active_clients');
+      }
     });
     
     socket.on('disconnect', () => {
@@ -94,7 +96,7 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
     });
     
     // Force immediate connection
-    if (!socket.connected) {
+    if (socket && !socket.connected) {
       console.log('Forcing viewer socket connection');
       socket.connect();
     }

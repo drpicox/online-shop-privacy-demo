@@ -18,7 +18,7 @@ export default function ShopPage() {
   useEffect(() => {
     console.log("Shop page mounted - ensuring socket connection");
     // Initialize socket with state access
-    const socket = initSocket(shopStore.getState);
+    initSocket(shopStore.getState);
     
     return () => {
       // No need to disconnect on page unmount as we want the socket to persist

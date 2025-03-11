@@ -45,7 +45,11 @@ export function throttle<T extends (...args: unknown[]) => unknown>(
  * Apply a Redux action to a state object by replaying it through Redux reducers
  * This is a simple utility that forwards the action to the original reducers
  */
-export function applyActionToState(state: any, action: any, reducers: any): any {
+export function applyActionToState(
+  state: Record<string, unknown>, 
+  action: Record<string, unknown>, 
+  reducers: (state: Record<string, unknown>, action: Record<string, unknown>) => Record<string, unknown>
+): Record<string, unknown> {
   if (!state || !action || !reducers) return state;
   
   try {

@@ -3,7 +3,7 @@
 import { useViewerSelector } from '@/store/viewer';
 import { selectClientState, selectHasClientState, selectIsPendingStateRequest } from '@/store/viewer';
 import { requestShopClientState } from '@/lib/viewerSocket';
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback } from 'react';
 import React from 'react';
 
 interface ClientStateViewerProps {
@@ -37,7 +37,7 @@ function ClientStateViewer({ clientId }: ClientStateViewerProps) {
   }, []);
   
   // Function to format the state - memoized to prevent recreation on every render
-  const renderStateObject = useCallback((obj: any, path: string = '') => {
+  const renderStateObject = useCallback((obj: unknown, path: string = '') => {
     if (!obj || typeof obj !== 'object') {
       return (
         <pre className="text-xs mt-1 bg-gray-800 text-green-400 p-2 rounded overflow-x-auto">
@@ -46,10 +46,13 @@ function ClientStateViewer({ clientId }: ClientStateViewerProps) {
       );
     }
     
+    // Cast to Record<string, unknown> since we've verified it's an object
+    const objRecord = obj as Record<string, unknown>;
+    
     return (
       <div className="pl-4 border-l border-gray-300">
-        {Object.keys(obj).map((key) => {
-          const value = obj[key];
+        {Object.keys(objRecord).map((key) => {
+          const value = objRecord[key];
           const currentPath = path ? `${path}.${key}` : key;
           const isObject = value && typeof value === 'object';
           
