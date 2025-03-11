@@ -8,7 +8,9 @@
     "build": "next build",
     "start": "NODE_ENV=production node server.js",
     "start:next": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "demo": "node demo.js",
+    "demo:simple": "node demo-simple.js"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
