@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import React, { useState, useEffect } from "react";
+import { QRCodeSVG } from 'qrcode.react';
 import ViewerSocketInitializer from "@/components/ViewerSocketInitializer";
 import ViewerStatus from "@/components/ViewerStatus";
 import ClientsList from "@/components/ClientsList";
@@ -16,6 +17,7 @@ type ViewMode = 'lastActions' | 'clientHistory' | 'allClients';
 export default function ViewerPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('lastActions');
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
+  const [baseUrl, setBaseUrl] = useState<string>('http://localhost:3000');
   
   // Handle tab switching
   const handleTabChange = React.useCallback((mode: ViewMode) => {
@@ -65,6 +67,25 @@ export default function ViewerPage() {
         <p className="mt-2 text-gray-600">
           This viewer demonstrates how user actions in e-commerce platforms can be tracked and monitored.
         </p>
+        <div className="mt-4 flex items-center space-x-4">
+          <div className="flex-1">
+            <div className="flex items-center">
+              <label htmlFor="baseUrl" className="mr-2 whitespace-nowrap">Shop URL:</label>
+              <input
+                id="baseUrl"
+                type="text"
+                value={baseUrl}
+                onChange={(e) => setBaseUrl(e.target.value)}
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Enter base URL"
+              />
+            </div>
+            <p className="mt-1 text-sm text-gray-500">QR Code points to: {baseUrl}/shop</p>
+          </div>
+          <div className="bg-white p-2 rounded-lg border border-gray-300">
+            <QRCodeSVG value={`${baseUrl}/shop`} size={100} />
+          </div>
+        </div>
       </header>
       
       {/* Tabs */}
