@@ -3,34 +3,41 @@
 import { useViewerSelector } from '@/store/viewer';
 import { selectClientState, selectHasClientState, selectIsPendingStateRequest } from '@/store/viewer';
 import { requestShopClientState } from '@/lib/viewerSocket';
-import { useState } from 'react';
+import { useState, useCallback, useMemo } from 'react';
+import React from 'react';
 
 interface ClientStateViewerProps {
   clientId: string;
 }
 
-export default function ClientStateViewer({ clientId }: ClientStateViewerProps) {
-  const clientState = useViewerSelector((state) => selectClientState(state, clientId));
-  const hasState = useViewerSelector((state) => selectHasClientState(state, clientId));
-  const isPending = useViewerSelector((state) => selectIsPendingStateRequest(state, clientId));
-  
-  // Get the latest actions for the client to display in UI (optional addition)
-  const clientActions = useViewerSelector((state) => state.clients.actions[clientId] || []);
+function ClientStateViewer({ clientId }: ClientStateViewerProps) {
+  // Use a single selector to get all needed state to minimize re-renders
+  const { 
+    clientState, 
+    hasState, 
+    isPending, 
+    clientActions 
+  } = useViewerSelector((state) => ({
+    clientState: selectClientState(state, clientId),
+    hasState: selectHasClientState(state, clientId),
+    isPending: selectIsPendingStateRequest(state, clientId),
+    clientActions: state.clients.actions[clientId] || []
+  }));
   
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
   
-  // Function to request the state
-  const handleRequestState = () => {
+  // Function to request the state - memoized with useCallback
+  const handleRequestState = useCallback(() => {
     requestShopClientState(clientId);
-  };
+  }, [clientId]);
   
-  // Helper to toggle a section
-  const toggleSection = (section: string) => {
-    setExpandedSection(expandedSection === section ? null : section);
-  };
+  // Helper to toggle a section - memoized with useCallback
+  const toggleSection = useCallback((section: string) => {
+    setExpandedSection(prev => prev === section ? null : section);
+  }, []);
   
-  // Function to format the state
-  const renderStateObject = (obj: any, path: string = '') => {
+  // Function to format the state - memoized to prevent recreation on every render
+  const renderStateObject = useCallback((obj: any, path: string = '') => {
     if (!obj || typeof obj !== 'object') {
       return (
         <pre className="text-xs mt-1 bg-gray-800 text-green-400 p-2 rounded overflow-x-auto">
@@ -78,7 +85,7 @@ export default function ClientStateViewer({ clientId }: ClientStateViewerProps) 
         })}
       </div>
     );
-  };
+  }, [expandedSection, toggleSection]);
 
   if (isPending) {
     return (
@@ -135,3 +142,6 @@ export default function ClientStateViewer({ clientId }: ClientStateViewerProps) 
     </div>
   );
 }
+
+// Export a memoized version of the component to prevent unnecessary re-renders
+export default React.memo(ClientStateViewer);

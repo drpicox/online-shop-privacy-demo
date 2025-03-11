@@ -2,7 +2,7 @@
 
 import { useViewerSelector } from '@/store/viewer';
 import { selectClientState } from '@/store/viewer';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { ClientProvider } from '@/store/context/ClientContext';
 import Router from "@/components/Router";
 
@@ -11,7 +11,7 @@ interface ViewportVisualizerProps {
   compact?: boolean;
 }
 
-export default function ViewportVisualizer({ clientId, compact = false }: ViewportVisualizerProps) {
+function ViewportVisualizer({ clientId, compact = false }: ViewportVisualizerProps) {
   const clientState = useViewerSelector((state) => selectClientState(state, clientId));
   const [isLoading, setIsLoading] = useState(true);
   const [scaleFactor, setScaleFactor] = useState(compact ? 0.3 : 0.5);
@@ -22,15 +22,19 @@ export default function ViewportVisualizer({ clientId, compact = false }: Viewpo
   const [scroll, setScroll] = useState({ x: 0, y: 0 });
   const [cursor, setCursor] = useState({ x: 0, y: 0 });
 
+  // Use memoized selectors to extract only needed data and prevent unnecessary re-renders
+  const tracking = useMemo(() => {
+    return clientState?.state?.tracking;
+  }, [clientState?.state?.tracking]);
+  
   useEffect(() => {
-    if (clientState?.state?.tracking) {
-      const { viewport, scroll, cursor } = clientState.state.tracking;
-      setViewport(viewport);
-      setScroll(scroll);
-      setCursor(cursor);
+    if (tracking) {
+      setViewport(tracking.viewport);
+      setScroll(tracking.scroll);
+      setCursor(tracking.cursor);
       setIsLoading(false);
     }
-  }, [clientState]);
+  }, [tracking]);
 
   // Calculate scale factor based on container width
   useEffect(() => {
@@ -279,3 +283,6 @@ export default function ViewportVisualizer({ clientId, compact = false }: Viewpo
     </div>
   );
 }
+
+// Memoize the component to prevent re-renders when parent changes
+export default React.memo(ViewportVisualizer);

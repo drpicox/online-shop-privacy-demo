@@ -92,7 +92,7 @@ export const clientsSlice = createSlice({
     addClient: (state, action: PayloadAction<ClientInfo>) => {
       const client = action.payload;
       
-      console.log(`Adding client: ${client.name} (${client.id})`);
+      // Client added
       
       // Store by client.id which should be unique per browser tab
       state.clients[client.id] = {
@@ -179,9 +179,8 @@ export const clientsSlice = createSlice({
         }
       });
       
-      // For debugging, log how many active clients there are now
+      // Count active clients
       const activeCount = Object.values(state.clients).filter(c => c.isActive).length;
-      console.log(`Viewer store: ${activeCount} active clients after update`);
     },
     
     clearHistory: (state) => {
@@ -232,12 +231,7 @@ export const selectActiveClients = (state: ViewerRootState) => {
   const clients = state.clients.clients;
   
   // Filter to only active clients
-  const activeClients = Object.values(clients).filter(client => client.isActive);
-  
-  // Log the count for debugging
-  console.log(`Selector found ${activeClients.length} active clients`);
-  
-  return activeClients;
+  return Object.values(clients).filter(client => client.isActive);
 };
 export const selectClientActions = (state: ViewerRootState, clientId: string) => 
   state.clients.actions[clientId] || [];

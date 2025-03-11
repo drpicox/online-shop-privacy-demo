@@ -5,22 +5,63 @@ import {
   selectActiveClients
 } from '@/store/viewer/slices/clientsSlice';
 import ViewportVisualizer from './ViewportVisualizer';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 
 export default function AllClientsVisualizer() {
   const activeClients = useViewerSelector(selectActiveClients);
   const [clientsInView, setClientsInView] = useState<string[]>([]);
   const [expandedClient, setExpandedClient] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Update the list of clients to show when activeClients changes
+  // Memoize the filtered client list to avoid unnecessary recalculations
+  const validClientIds = useMemo(() => {
     // Filter out unnamed clients (those not starting with "user_")
-    const validClients = activeClients.filter(client => client.name.startsWith('user_'));
-    setClientsInView(validClients.map(client => client.id));
+    return activeClients
+      .filter(client => client.name.startsWith('user_'))
+      .map(client => client.id);
   }, [activeClients]);
+
+  // Update state when filtered list changes
+  useEffect(() => {
+    setClientsInView(validClientIds);
+  }, [validClientIds]);
 
   // Check if we have valid clients (those starting with "user_")
   const validClientsCount = clientsInView.length;
+  
+  // Handle expanding a client view - with useCallback to maintain reference stability
+  const handleExpandClient = useCallback((clientId: string) => {
+    setExpandedClient(prevExpandedClient => 
+      prevExpandedClient === clientId ? null : clientId
+    );
+  }, []);
+
+  // Pre-calculate the client cards to prevent conditional hook calls
+  const clientCards = useMemo(() => {
+    return clientsInView.map((clientId) => {
+      const client = activeClients.find(c => c.id === clientId);
+      
+      return (
+        <div 
+          key={clientId} 
+          className="border border-gray-200 rounded-lg shadow-sm bg-white p-2 hover:shadow-md transition-shadow cursor-pointer"
+          onClick={() => handleExpandClient(clientId)}
+        >
+          <div className="flex justify-between items-center mb-2">
+            <div className="text-sm font-medium truncate">
+              {client?.name || clientId.substring(0, 8)}...
+            </div>
+            <div className="flex items-center">
+              <span className="h-2 w-2 rounded-full bg-green-500 mr-1"></span>
+              <span className="text-xs text-gray-500">
+                {new Date(client?.lastSeen || '').toLocaleTimeString()}
+              </span>
+            </div>
+          </div>
+          <ViewportVisualizer clientId={clientId} compact={true} />
+        </div>
+      );
+    });
+  }, [clientsInView, activeClients, handleExpandClient]);
   
   if (validClientsCount === 0) {
     return (
@@ -32,11 +73,6 @@ export default function AllClientsVisualizer() {
       </div>
     );
   }
-
-  // Handle expanding a client view
-  const handleExpandClient = (clientId: string) => {
-    setExpandedClient(expandedClient === clientId ? null : clientId);
-  };
 
   return (
     <div className="bg-gray-100 p-4 rounded-lg">
@@ -89,30 +125,7 @@ export default function AllClientsVisualizer() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {clientsInView.map((clientId) => {
-            const client = activeClients.find(c => c.id === clientId);
-            
-            return (
-              <div 
-                key={clientId} 
-                className="border border-gray-200 rounded-lg shadow-sm bg-white p-2 hover:shadow-md transition-shadow cursor-pointer"
-                onClick={() => handleExpandClient(clientId)}
-              >
-                <div className="flex justify-between items-center mb-2">
-                  <div className="text-sm font-medium truncate">
-                    {client?.name || clientId.substring(0, 8)}...
-                  </div>
-                  <div className="flex items-center">
-                    <span className="h-2 w-2 rounded-full bg-green-500 mr-1"></span>
-                    <span className="text-xs text-gray-500">
-                      {new Date(client?.lastSeen || '').toLocaleTimeString()}
-                    </span>
-                  </div>
-                </div>
-                <ViewportVisualizer clientId={clientId} compact={true} />
-              </div>
-            );
-          })}
+          {clientCards}
         </div>
       )}
     </div>
