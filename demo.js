@@ -18,67 +18,22 @@ exec('which ngrok', (error, stdout) => {
 function startDemo() {
   console.log('🚀 Starting demo environment...');
   
-  // Use the ngrok API instead of parsing output
-  console.log('🔄 Getting ngrok URL via HTTP API...');
+  // Use the static domain for ngrok
+  console.log('🔄 Starting ngrok with static domain...');
   
-  // Start ngrok in a separate process
-  const ngrok = spawn('ngrok', ['http', '3000'], { 
+  // Start ngrok in a separate process with static domain
+  const staticDomain = 'fresh-grubworm-partly.ngrok-free.app';
+  const ngrokUrl = `https://${staticDomain}`;
+  
+  const ngrok = spawn('ngrok', ['http', '--url', staticDomain, '3000'], { 
     stdio: ['pipe', 'pipe', 'pipe'],
     detached: true 
   });
   
-  // Wait a moment for ngrok to start and set up its API
+  // Wait a moment for ngrok to start up
   setTimeout(() => {
-    // Use ngrok's API to get the URL instead of parsing stdout
-    http.get('http://localhost:4040/api/tunnels', (res) => {
-      let data = '';
-      
-      // A chunk of data has been received
-      res.on('data', (chunk) => {
-        data += chunk;
-      });
-      
-      // The whole response has been received
-      res.on('end', () => {
-        try {
-          const tunnels = JSON.parse(data).tunnels;
-          const secureTunnel = tunnels.find(t => t.proto === 'https');
-          const httpTunnel = tunnels.find(t => t.proto === 'http');
-          const ngrokUrl = secureTunnel ? secureTunnel.public_url : httpTunnel ? httpTunnel.public_url : null;
-          
-          if (ngrokUrl) {
-            console.log(`🌐 ngrok URL: ${ngrokUrl}`);
-            startApp(ngrokUrl);
-          } else {
-            console.error('❌ Could not find ngrok tunnel URL');
-            ngrok.kill();
-            process.exit(1);
-          }
-        } catch (e) {
-          console.error('❌ Error parsing ngrok API response:', e);
-          console.log('Raw response:', data);
-          ngrok.kill();
-          process.exit(1);
-        }
-      });
-    }).on('error', (err) => {
-      console.error('❌ Error connecting to ngrok API:', err.message);
-      console.log('Falling back to manual ngrok configuration...');
-      console.log('Please enter your ngrok URL from the ngrok dashboard:');
-      
-      // Set up stdin to read the URL manually
-      process.stdin.resume();
-      process.stdin.setEncoding('utf8');
-      process.stdin.on('data', (input) => {
-        const manualUrl = input.toString().trim();
-        if (manualUrl.startsWith('http')) {
-          console.log(`Using manually entered URL: ${manualUrl}`);
-          startApp(manualUrl);
-        } else {
-          console.log('That doesn\'t look like a valid URL. Please enter a URL starting with http:// or https://');
-        }
-      });
-    });
+    console.log(`🌐 ngrok URL: ${ngrokUrl}`);
+    startApp(ngrokUrl);
   }, 2000); // Wait 2 seconds for ngrok to initialize
   
   // Handle ngrok output for debugging
