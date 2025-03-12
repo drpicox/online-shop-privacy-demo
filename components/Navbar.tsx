@@ -1,15 +1,56 @@
 // components/Navbar.tsx
 'use client';
 
-import { ShoppingCart, Heart, Menu } from 'lucide-react';
-import { useShopSelector } from '@/store';
+import { ShoppingCart, Heart, Menu, Search, X } from 'lucide-react';
+import { useShopDispatch, useShopSelector } from '@/store';
 import Link from '@/components/Link';
 import SearchBar from './SearchBar';
-import {selectCartItemsCount} from "@/store/shop/slices/cartSlice";
+import { selectCartItemsCount } from "@/store/shop/slices/cartSlice";
+import { selectViewportWidth } from "@/store/shop/slices/trackingSlice";
+import { toggleSearchVisibility } from "@/store/shop/slices/uiSlice";
+import { useMemo, useState, useEffect } from 'react';
 
 export default function Navbar() {
+  const dispatch = useShopDispatch();
   const totalCartItems = useShopSelector(selectCartItemsCount);
   const wishlistItems = useShopSelector(state => state.wishlist.items);
+  const viewportWidth = useShopSelector(selectViewportWidth);
+  
+  // Use local state as fallback
+  const [localSearchVisible, setLocalSearchVisible] = useState(false);
+  
+  // Get the UI state from Redux
+  let reduxSearchVisible = false;
+  try {
+    reduxSearchVisible = useShopSelector((state) => state.ui?.isSearchVisible || false);
+  } catch (error) {
+    console.error('Error reading search visibility from Redux:', error);
+  }
+  
+  // Combine Redux and local state for display
+  const isSearchVisible = reduxSearchVisible || localSearchVisible;
+  
+  // When redux state becomes available, sync the local state
+  useEffect(() => {
+    if (reduxSearchVisible !== localSearchVisible) {
+      setLocalSearchVisible(reduxSearchVisible);
+    }
+  }, [reduxSearchVisible]);
+  
+  // Determine if we're on mobile based on tracked viewport width
+  const isMobile = useMemo(() => viewportWidth < 768, [viewportWidth]);
+  
+  // Toggle function that tries Redux first, falls back to local state
+  const toggleSearch = () => {
+    try {
+      // Always update local state to keep them in sync
+      setLocalSearchVisible(!isSearchVisible);
+      // Try to dispatch to Redux
+      dispatch(toggleSearchVisibility());
+    } catch (error) {
+      console.error('Error dispatching toggle action:', error);
+    }
+  };
 
   return (
       <nav className="bg-white shadow-sm">
@@ -23,7 +64,23 @@ export default function Navbar() {
             </div>
 
             <div className="flex items-center space-x-4">
-              <SearchBar />
+              {/* Search button for mobile */}
+              {isMobile && (
+                <button onClick={toggleSearch}>
+                  {isSearchVisible ? (
+                    <X className="h-6 w-6 text-gray-600" />
+                  ) : (
+                    <Search className="h-6 w-6 text-gray-600" />
+                  )}
+                </button>
+              )}
+              
+              {/* Search bar - conditionally rendered based on viewport width */}
+              {(!isMobile || isSearchVisible) && (
+                <div className={isSearchVisible && isMobile ? "absolute top-16 left-0 right-0 bg-white p-2 shadow-md z-50" : ""}>
+                  <SearchBar />
+                </div>
+              )}
 
               <Link href="likes" className="relative">
                 <Heart className="h-6 w-6 text-gray-600" />

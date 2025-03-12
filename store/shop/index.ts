@@ -7,6 +7,7 @@ import filterReducer from './slices/filterSlice';
 import searchReducer from './slices/searchSlice';
 import checkoutReducer from './slices/checkoutSlice';
 import trackingReducer from './slices/trackingSlice';
+import uiReducer from './slices/uiSlice';
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import socketMiddleware from './middleware/socketMiddleware';
 import { useClientContext } from '../context/ClientContext';
@@ -21,6 +22,7 @@ export * from './slices/navigationSlice';
 export * from './slices/searchSlice';
 export * from './slices/trackingSlice';
 export * from './slices/wishlistSlice';
+export * from './slices/uiSlice';
 
 export const shopStore = configureStore({
   reducer: {
@@ -31,12 +33,17 @@ export const shopStore = configureStore({
     search: searchReducer,
     wishlist: wishlistReducer,
     tracking: trackingReducer,
+    ui: uiReducer,
   },
   middleware: (getDefaultMiddleware) => 
     getDefaultMiddleware().concat(socketMiddleware),
 });
 
-export type ShopRootState = ReturnType<typeof shopStore.getState>;
+export type ShopRootState = ReturnType<typeof shopStore.getState> & {
+  ui?: {
+    isSearchVisible: boolean;
+  }
+};
 export type ShopAppDispatch = typeof shopStore.dispatch;
 
 export const useShopDispatch: () => ShopAppDispatch = useDispatch;

@@ -1,20 +1,33 @@
 // components/SearchBar.tsx
 'use client';
 
-import { useMemo} from 'react';
+import { useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { products } from '@/lib/data';
 import { searchProducts } from '@/utils/search';
 import Link from '@/components/Link';
-import {navigate} from "@/store/shop/slices/navigationSlice";
-import {useShopDispatch, useShopSelector} from "@/store";
-import {selectSearchQuery, setSearchQuery} from "@/store/shop/slices/searchSlice";
+import { navigate } from "@/store/shop/slices/navigationSlice";
+import { useShopDispatch, useShopSelector } from "@/store";
+import { selectSearchQuery, setSearchQuery } from "@/store/shop/slices/searchSlice";
+import { selectViewportWidth } from "@/store/shop/slices/trackingSlice";
 
 export default function SearchBar() {
     const dispatch = useShopDispatch();
     const query = useShopSelector(selectSearchQuery);
+    const viewportWidth = useShopSelector(selectViewportWidth);
     const isOpen = query.length >= 2;
     const quickResults = useMemo(() => isOpen ? searchProducts(products, query).slice(0, 3) : [], [query, isOpen]);
+    
+    // Determine input width based on viewport width
+    const inputWidth = useMemo(() => {
+        if (viewportWidth < 640) {
+            return '100%'; // Full width on small mobile
+        } else if (viewportWidth < 768) {
+            return '200px'; // Slightly constrained on larger mobile
+        } else {
+            return '256px'; // Default width on desktop
+        }
+    }, [viewportWidth]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -32,7 +45,8 @@ export default function SearchBar() {
                     value={query}
                     onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                     placeholder="Search products..."
-                    className="pl-8 pr-10 py-2 border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="pl-8 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    style={{ width: inputWidth }}
                 />
                 <Search className="absolute left-2 top-2.5 h-5 w-5 text-gray-400" />
                 {query && (
