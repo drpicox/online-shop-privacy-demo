@@ -7,6 +7,7 @@ import Navbar from '@/components/Navbar';
 import {useShopDispatch, useShopSelector} from '@/store';
 import {addToWishlist, removeFromWishlist, selectIsInWishlist} from "@/store/shop/slices/wishlistSlice";
 import {addToCart} from "@/store/shop/slices/cartSlice";
+import {selectViewportWidth} from "@/store/shop/slices/trackingSlice";
 
 export default function ProductDetailPage() {
     // Get productId from Redux navigation state
@@ -14,6 +15,7 @@ export default function ProductDetailPage() {
     const { params } = useShopSelector(state => state.navigation);
     const productId = Number(params.id);
     const liked = useShopSelector(state => selectIsInWishlist(state, productId));
+    const viewportWidth = useShopSelector(state => selectViewportWidth(state));
     const product = products.find(p => p.id === productId);
 
     if (!product) {
@@ -33,7 +35,7 @@ export default function ProductDetailPage() {
             <Navbar />
 
             <main className="max-w-7xl mx-auto px-4 py-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className={viewportWidth < 768 ? 'grid grid-cols-1 gap-8' : 'grid grid-cols-2 gap-8'}>
                     {/* Product Image */}
                     <div className="relative w-full aspect-square">
                         <img
