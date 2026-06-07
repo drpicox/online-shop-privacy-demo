@@ -8,6 +8,7 @@ import Link from '@/components/Link';
 import { useShopDispatch, useShopSelector } from '@/store';
 import { addToWishlist, removeFromWishlist, selectIsInWishlist } from '@/store/shop/slices/wishlistSlice';
 import {addToCart} from "@/store/shop/slices/cartSlice";
+import { formatPrice } from '@/lib/utils';
 import React from 'react';
 
 interface ProductCardProps {
@@ -49,7 +50,7 @@ function ProductCard({ product }: ProductCardProps) {
                 <CardContent className="p-4">
                     <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
                     <div className="flex justify-between items-center">
-                        <span className="text-xl font-bold">${product.price}</span>
+                        <span className="text-xl font-bold">{formatPrice(product.price)}</span>
                         <button
                             onClick={(e) => {
                                 e.preventDefault(); // Prevent the Link from triggering
@@ -58,7 +59,7 @@ function ProductCard({ product }: ProductCardProps) {
                             }}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         >
-                            Add to Cart
+                            Afegeix al carret
                         </button>
                     </div>
                 </CardContent>

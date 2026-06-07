@@ -7,6 +7,7 @@ import { selectCartItems, selectCartTotal, removeFromCart, updateQuantity } from
 import { navigate } from '@/store/shop/slices/navigationSlice';
 import Navbar from '@/components/Navbar';
 import Link from '@/components/Link';
+import { formatPrice } from '@/lib/utils';
 
 export default function CartPage() {
   const dispatch = useShopDispatch();
@@ -18,10 +19,10 @@ export default function CartPage() {
         <div className="min-h-screen bg-gray-50">
           <Navbar />
           <div className="max-w-3xl mx-auto py-12 px-4 text-center">
-            <h1 className="text-2xl font-bold mb-4">Your Cart is Empty</h1>
-            <p className="text-gray-600 mb-8">Add some items to your cart to continue shopping.</p>
+            <h1 className="text-2xl font-bold mb-4">El carret està buit</h1>
+            <p className="text-gray-600 mb-8">Afegeix articles al carret per continuar comprant.</p>
             <Link href="home" className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
-              Continue Shopping
+              Continua comprant
             </Link>
           </div>
         </div>
@@ -34,9 +35,9 @@ export default function CartPage() {
 
         <main className="max-w-3xl mx-auto py-12 px-4">
           <div className="flex justify-between items-center mb-8">
-            <h1 className="text-2xl font-bold">Shopping Cart</h1>
+            <h1 className="text-2xl font-bold">Carret de la compra</h1>
             <Link href="home" className="text-blue-600 hover:text-blue-800 transition-colors">
-              Continue Shopping
+              Continua comprant
             </Link>
           </div>
 
@@ -52,7 +53,7 @@ export default function CartPage() {
 
                     <div className="ml-6 flex-grow">
                       <h3 className="text-lg font-semibold">{item.name}</h3>
-                      <p className="text-gray-600">${item.price}</p>
+                      <p className="text-gray-600">{formatPrice(item.price)}</p>
 
                       <div className="flex items-center mt-4">
                         <div className="flex items-center border rounded">
@@ -81,7 +82,7 @@ export default function CartPage() {
                     </div>
 
                     <div className="text-right">
-                      <p className="text-lg font-bold">${(item.price * item.quantity).toFixed(2)}</p>
+                      <p className="text-lg font-bold">{formatPrice(item.price * item.quantity)}</p>
                     </div>
                   </div>
                 </div>
@@ -90,14 +91,14 @@ export default function CartPage() {
             <div className="p-6 border-t border-gray-200">
               <div className="flex justify-between items-center mb-4">
                 <span className="text-lg font-semibold">Subtotal</span>
-                <span className="text-2xl font-bold">${cartTotal.toFixed(2)}</span>
+                <span className="text-2xl font-bold">{formatPrice(cartTotal)}</span>
               </div>
 
               <button
                   onClick={() => dispatch(navigate({ route: 'checkout' }))}
                   className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
               >
-                Proceed to Checkout
+                Tramita la comanda
               </button>
             </div>
           </div>

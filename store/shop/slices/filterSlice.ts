@@ -5,7 +5,7 @@ interface FilterState {
 }
 
 const initialState: FilterState = {
-    category: 'All',
+    category: 'Tots',
 };
 
 const filterSlice = createSlice({

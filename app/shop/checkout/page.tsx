@@ -6,14 +6,15 @@ import { CheckCircle } from 'lucide-react';
 import { useShopDispatch, useShopSelector } from "@/store";
 import { navigate } from "@/store/shop/slices/navigationSlice";
 import { clearCart, selectCartItems, selectCartTotal } from "@/store/shop/slices/cartSlice";
-import { 
-    setName, 
-    setCity, 
-    setPhone, 
-    confirmOrder, 
-    resetCheckout, 
-    selectCheckoutInfo, 
-    selectIsConfirmed 
+import { formatPrice } from "@/lib/utils";
+import {
+    setName,
+    setCity,
+    setPhone,
+    confirmOrder,
+    resetCheckout,
+    selectCheckoutInfo,
+    selectIsConfirmed
 } from "@/store/shop/slices/checkoutSlice";
 
 export default function CheckoutPage() {
@@ -44,13 +45,13 @@ export default function CheckoutPage() {
                 <div className="p-4 max-w-lg mx-auto mt-8">
                     <div className="bg-white p-6 rounded-lg shadow text-center">
                         <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                        <h2 className="text-2xl font-bold mb-2">Order Confirmed!</h2>
-                        <p className="text-gray-600 mb-6">Thanks for your order, {name}!</p>
+                        <h2 className="text-2xl font-bold mb-2">Comanda confirmada!</h2>
+                        <p className="text-gray-600 mb-6">Gràcies per la teva comanda, {name}!</p>
                         <button
                             onClick={handleOrderComplete}
                             className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors w-full"
                         >
-                            Continue Shopping
+                            Continua comprant
                         </button>
                     </div>
                 </div>
@@ -63,33 +64,33 @@ export default function CheckoutPage() {
             <Navbar />
 
             <div className="p-4 max-w-lg mx-auto">
-                <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+                <h1 className="text-2xl font-bold mb-6">Finalitzar la compra</h1>
 
                 {/* Order Summary */}
                 <div className="bg-white p-4 rounded-lg shadow mb-6">
-                    <h2 className="text-lg font-bold mb-4">Order Summary</h2>
+                    <h2 className="text-lg font-bold mb-4">Resum de la comanda</h2>
                     <div className="space-y-2 mb-4">
                         {cartItems.map((item) => (
                             <div key={item.id} className="flex justify-between">
                                 <div>
                                     <p>{item.name} x{item.quantity}</p>
                                 </div>
-                                <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                                <p className="font-medium">{formatPrice(item.price * item.quantity)}</p>
                             </div>
                         ))}
                     </div>
                     <div className="border-t pt-2 space-y-2">
                         <div className="flex justify-between">
                             <span>Subtotal</span>
-                            <span>${subtotal.toFixed(2)}</span>
+                            <span>{formatPrice(subtotal)}</span>
                         </div>
                         <div className="flex justify-between">
-                            <span>Shipping</span>
-                            <span>${shipping.toFixed(2)}</span>
+                            <span>Enviament</span>
+                            <span>{formatPrice(shipping)}</span>
                         </div>
                         <div className="flex justify-between font-bold text-lg border-t pt-2">
                             <span>Total</span>
-                            <span>${total.toFixed(2)}</span>
+                            <span>{formatPrice(total)}</span>
                         </div>
                     </div>
                 </div>
@@ -98,36 +99,36 @@ export default function CheckoutPage() {
                 <form onSubmit={handleSubmit} className="bg-white p-4 rounded-lg shadow">
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-sm font-medium mb-1">Name</label>
+                            <label className="block text-sm font-medium mb-1">Nom</label>
                             <input
                                 type="text"
                                 required
                                 value={name}
                                 onChange={(e) => dispatch(setName(e.target.value))}
                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="Your name"
+                                placeholder="El teu nom"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">City</label>
+                            <label className="block text-sm font-medium mb-1">Ciutat</label>
                             <input
                                 type="text"
                                 required
                                 value={city}
                                 onChange={(e) => dispatch(setCity(e.target.value))}
                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="Your city"
+                                placeholder="La teva ciutat"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium mb-1">Phone</label>
+                            <label className="block text-sm font-medium mb-1">Telèfon</label>
                             <input
                                 type="tel"
                                 required
                                 value={phone}
                                 onChange={(e) => dispatch(setPhone(e.target.value))}
                                 className="w-full p-3 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="Your phone number"
+                                placeholder="El teu número de telèfon"
                             />
                         </div>
                     </div>
@@ -135,7 +136,7 @@ export default function CheckoutPage() {
                         type="submit"
                         className="mt-6 w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors text-lg"
                     >
-                        Place Order (${total.toFixed(2)})
+                        Fes la comanda ({formatPrice(total)})
                     </button>
                 </form>
             </div>

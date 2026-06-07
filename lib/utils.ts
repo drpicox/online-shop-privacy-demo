@@ -6,6 +6,13 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 /**
+ * Format a numeric price as a Catalan euro amount, e.g. 79.99 -> "79,99 €".
+ */
+export function formatPrice(value: number): string {
+  return value.toLocaleString("ca-ES", { style: "currency", currency: "EUR" });
+}
+
+/**
  * Creates a throttled function that only invokes the provided function at most once per
  * specified wait period.
  */

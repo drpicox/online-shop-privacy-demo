@@ -1,168 +1,173 @@
 // lib/data.ts
 import { Product } from '@/types';
 
-export const products: Product[] = [
+// `slug` keeps the original English identifier used for the image file names
+// (e.g. /products/dt-flat-classic-white-sneakers.jpg), so the visible name and
+// description can be translated freely without breaking the product images.
+const rawProducts = [
   {
     id: 1,
-    name: "Classic White Sneakers",
+    slug: "classic-white-sneakers",
+    name: "Sabatilles blanques clàssiques",
     price: 79.99,
-    image: "/products/classic-white-sneakers.png",
-    category: "Shoes",
-    description: "Versatile white sneakers perfect for any casual outfit. Features a comfortable cushioned sole and premium materials for lasting durability."
+    category: "Calçat",
+    description: "Sabatilles blanques versàtils, perfectes per a qualsevol conjunt informal. Tenen una sola encoixinada còmoda i materials de primera qualitat per a una durabilitat duradora."
   },
   {
     id: 2,
-    name: "Denim Jacket",
+    slug: "denim-jacket",
+    name: "Jaqueta texana",
     price: 129.99,
-    image: "/products/denim-jacket.png",
-    category: "Outerwear",
-    description: "Classic denim jacket made from premium cotton. Features a comfortable fit, multiple pockets, and vintage-style washing."
+    category: "Abrics",
+    description: "Jaqueta texana clàssica feta amb cotó de primera qualitat. Té un tall còmode, múltiples butxaques i un rentat d'estil vintage."
   },
   {
     id: 3,
-    name: "Vintage T-Shirt",
+    slug: "vintage-t-shirt",
+    name: "Samarreta vintage",
     price: 29.99,
-    image: "/products/vintage-tshirt.png",
-    category: "T-Shirts"
+    category: "Samarretes"
   },
   {
     id: 4,
-    name: "Leather Backpack",
+    slug: "leather-backpack",
+    name: "Motxilla de pell",
     price: 89.99,
-    image: "/products/leather-backpack.png",
-    category: "Accessories"
+    category: "Accessoris"
   },
   {
     id: 5,
-    name: "Running Shoes",
+    slug: "running-shoes",
+    name: "Sabatilles de running",
     price: 119.99,
-    image: "/api/placeholder/300/300",
-    category: "Shoes",
-    description: "Lightweight running shoes with advanced cushioning technology. Perfect for both training and casual wear."
+    category: "Calçat",
+    description: "Sabatilles de running lleugeres amb tecnologia d'amortiment avançada. Perfectes tant per entrenar com per a l'ús diari."
   },
   {
     id: 6,
-    name: "Graphic Print T-Shirt",
+    slug: "graphic-print-t-shirt",
+    name: "Samarreta estampada",
     price: 34.99,
-    image: "/api/placeholder/300/300",
-    category: "T-Shirts",
-    description: "Cotton t-shirt featuring unique artistic design. Limited edition print."
+    category: "Samarretes",
+    description: "Samarreta de cotó amb un disseny artístic únic. Estampat d'edició limitada."
   },
   {
     id: 7,
-    name: "Wool Winter Coat",
+    slug: "wool-winter-coat",
+    name: "Abric d'hivern de llana",
     price: 199.99,
-    image: "/api/placeholder/300/300",
-    category: "Outerwear",
-    description: "Warm and stylish winter coat made from premium wool blend. Features a modern cut and full lining."
+    category: "Abrics",
+    description: "Abric d'hivern càlid i elegant fet amb una mescla de llana de primera qualitat. Té un tall modern i folre complet."
   },
   {
     id: 8,
-    name: "Canvas Tote Bag",
+    slug: "canvas-tote-bag",
+    name: "Bossa de lona",
     price: 39.99,
-    image: "/api/placeholder/300/300",
-    category: "Accessories",
-    description: "Durable canvas tote with leather handles. Perfect for shopping or casual daily use."
+    category: "Accessoris",
+    description: "Bossa de lona resistent amb nanses de pell. Perfecta per anar a comprar o per a l'ús diari."
   },
   {
     id: 9,
-    name: "High-Top Sneakers",
+    slug: "high-top-sneakers",
+    name: "Sabatilles de canya alta",
     price: 84.99,
-    image: "/api/placeholder/300/300",
-    category: "Shoes",
-    description: "Classic high-top sneakers with modern comfort features. Available in multiple colors."
+    category: "Calçat",
+    description: "Sabatilles de canya alta clàssiques amb comoditat moderna. Disponibles en diversos colors."
   },
   {
     id: 10,
-    name: "Striped Polo Shirt",
+    slug: "striped-polo-shirt",
+    name: "Polo de ratlles",
     price: 44.99,
-    image: "/api/placeholder/300/300",
-    category: "T-Shirts",
-    description: "Cotton polo shirt with classic stripe pattern. Perfect for casual or semi-formal occasions."
+    category: "Samarretes",
+    description: "Polo de cotó amb un patró de ratlles clàssic. Perfecte per a ocasions informals o semiformals."
   },
   {
     id: 11,
-    name: "Rain Jacket",
+    slug: "rain-jacket",
+    name: "Impermeable",
     price: 89.99,
-    image: "/api/placeholder/300/300",
-    category: "Outerwear",
-    description: "Waterproof rain jacket with hood. Lightweight and packable design."
+    category: "Abrics",
+    description: "Jaqueta impermeable amb caputxa. Disseny lleuger i plegable."
   },
   {
     id: 12,
-    name: "Leather Wallet",
+    slug: "leather-wallet",
+    name: "Cartera de pell",
     price: 49.99,
-    image: "/api/placeholder/300/300",
-    category: "Accessories",
-    description: "Genuine leather wallet with multiple card slots and coin pocket."
+    category: "Accessoris",
+    description: "Cartera de pell autèntica amb múltiples ranures per a targetes i butxaca per a monedes."
   },
   {
     id: 13,
-    name: "Sport Sandals",
+    slug: "sport-sandals",
+    name: "Sandàlies esportives",
     price: 59.99,
-    image: "/api/placeholder/300/300",
-    category: "Shoes",
-    description: "Comfortable sport sandals with adjustable straps. Perfect for outdoor activities."
+    category: "Calçat",
+    description: "Sandàlies esportives còmodes amb tires ajustables. Perfectes per a activitats a l'aire lliure."
   },
   {
     id: 14,
-    name: "Basic V-Neck T-Shirt",
+    slug: "basic-v-neck-t-shirt",
+    name: "Samarreta bàsica de coll de pic",
     price: 24.99,
-    image: "/api/placeholder/300/300",
-    category: "T-Shirts",
-    description: "Soft cotton v-neck t-shirt. Available in multiple colors."
+    category: "Samarretes",
+    description: "Samarreta de cotó suau amb coll de pic. Disponible en diversos colors."
   },
   {
     id: 15,
-    name: "Windbreaker Jacket",
+    slug: "windbreaker-jacket",
+    name: "Tallavents",
     price: 69.99,
-    image: "/api/placeholder/300/300",
-    category: "Outerwear",
-    description: "Lightweight windbreaker with zip pockets. Perfect for spring and fall."
+    category: "Abrics",
+    description: "Tallavents lleuger amb butxaques amb cremallera. Perfecte per a la primavera i la tardor."
   },
   {
     id: 16,
-    name: "Sunglasses",
+    slug: "sunglasses",
+    name: "Ulleres de sol",
     price: 129.99,
-    image: "/api/placeholder/300/300",
-    category: "Accessories",
-    description: "Classic design sunglasses with UV protection. Includes protective case."
+    category: "Accessoris",
+    description: "Ulleres de sol de disseny clàssic amb protecció UV. Inclouen funda protectora."
   },
   {
     id: 17,
-    name: "Slip-On Sneakers",
+    slug: "slip-on-sneakers",
+    name: "Sabatilles sense cordons",
     price: 64.99,
-    image: "/api/placeholder/300/300",
-    category: "Shoes",
-    description: "Casual slip-on sneakers with memory foam insole. Perfect for everyday wear."
+    category: "Calçat",
+    description: "Sabatilles informals sense cordons amb plantilla de memory foam. Perfectes per a l'ús diari."
   },
   {
     id: 18,
-    name: "Long Sleeve T-Shirt",
+    slug: "long-sleeve-t-shirt",
+    name: "Samarreta de màniga llarga",
     price: 39.99,
-    image: "/api/placeholder/300/300",
-    category: "T-Shirts",
-    description: "Comfortable long sleeve t-shirt made from soft cotton blend."
+    category: "Samarretes",
+    description: "Samarreta de màniga llarga còmoda feta amb una mescla de cotó suau."
   },
   {
     id: 19,
-    name: "Puffer Jacket",
+    slug: "puffer-jacket",
+    name: "Anorac encoixinat",
     price: 149.99,
-    image: "/api/placeholder/300/300",
-    category: "Outerwear",
-    description: "Warm puffer jacket with synthetic fill. Includes hood and zip pockets."
+    category: "Abrics",
+    description: "Anorac encoixinat càlid amb farciment sintètic. Inclou caputxa i butxaques amb cremallera."
   },
   {
     id: 20,
-    name: "Crossbody Bag",
+    slug: "crossbody-bag",
+    name: "Bossa bandolera",
     price: 79.99,
-    image: "/api/placeholder/300/300",
-    category: "Accessories",
-    description: "Stylish crossbody bag with adjustable strap. Multiple compartments for organization."
+    category: "Accessoris",
+    description: "Bossa bandolera elegant amb corretja ajustable. Múltiples compartiments per a l'organització."
   }
-].map(p => ({
-  ...p,
-  image: `/products/dt-flat-${p.name.toLowerCase().replace(/ /g, '-')}.jpg`
+];
+
+export const products: Product[] = rawProducts.map(({ slug, ...product }) => ({
+  ...product,
+  image: `/products/dt-flat-${slug}.jpg`
 }));
 
-export const categories = ["All", "Shoes", "Outerwear", "T-Shirts", "Accessories"];
+export const categories = ["Tots", "Calçat", "Abrics", "Samarretes", "Accessoris"];

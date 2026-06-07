@@ -8,6 +8,7 @@ import {useShopDispatch, useShopSelector} from '@/store';
 import {addToWishlist, removeFromWishlist, selectIsInWishlist} from "@/store/shop/slices/wishlistSlice";
 import {addToCart} from "@/store/shop/slices/cartSlice";
 import {selectViewportWidth} from "@/store/shop/slices/trackingSlice";
+import { formatPrice } from "@/lib/utils";
 
 export default function ProductDetailPage() {
     // Get productId from Redux navigation state
@@ -19,7 +20,7 @@ export default function ProductDetailPage() {
     const product = products.find(p => p.id === productId);
 
     if (!product) {
-        return <div>Product not found</div>;
+        return <div>Producte no trobat</div>;
     }
 
     const handleLikeClick = () => {
@@ -56,14 +57,14 @@ export default function ProductDetailPage() {
                     {/* Product Info */}
                     <div>
                         <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-                        <p className="text-2xl font-bold mb-4">${product.price}</p>
+                        <p className="text-2xl font-bold mb-4">{formatPrice(product.price)}</p>
                         <p className="text-gray-600 mb-6">{product.description}</p>
 
                         <button
                             onClick={() => dispatch(addToCart(product))}
                             className="w-full bg-blue-600 text-white py-3 rounded-lg hover:bg-blue-700 transition-colors"
                         >
-                            Add to Cart
+                            Afegeix al carret
                         </button>
                     </div>
                 </div>

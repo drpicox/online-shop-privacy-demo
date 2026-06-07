@@ -10,6 +10,7 @@ import { navigate } from "@/store/shop/slices/navigationSlice";
 import { useShopDispatch, useShopSelector } from "@/store";
 import { selectSearchQuery, setSearchQuery } from "@/store/shop/slices/searchSlice";
 import { selectViewportWidth } from "@/store/shop/slices/trackingSlice";
+import { formatPrice } from "@/lib/utils";
 
 export default function SearchBar() {
     const dispatch = useShopDispatch();
@@ -44,7 +45,7 @@ export default function SearchBar() {
                     type="text"
                     value={query}
                     onChange={(e) => dispatch(setSearchQuery(e.target.value))}
-                    placeholder="Search products..."
+                    placeholder="Cerca productes..."
                     className="pl-8 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     style={{ width: inputWidth }}
                 />
@@ -78,7 +79,7 @@ export default function SearchBar() {
                             />
                             <div className="ml-4">
                                 <h4 className="font-medium">{product.name}</h4>
-                                <p className="text-sm text-gray-600">${product.price}</p>
+                                <p className="text-sm text-gray-600">{formatPrice(product.price)}</p>
                             </div>
                         </Link>
                     ))}
@@ -87,7 +88,7 @@ export default function SearchBar() {
                         onClick={handleSubmit}
                         className="w-full p-3 text-blue-600 hover:bg-gray-50 transition-colors text-sm font-medium"
                     >
-                        See all results for &quot;{query}&quot;
+                        Veure tots els resultats de «{query}»
                     </button>
                 </div>
             )}

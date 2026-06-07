@@ -21,10 +21,12 @@ export default function SearchPage() {
             <main className="max-w-7xl mx-auto px-4 py-8">
                 <div className="mb-8">
                     <h1 className="text-2xl font-bold mb-2">
-                        Search Results for &quot;{query}&quot;
+                        Resultats de cerca per «{query}»
                     </h1>
                     <p className="text-gray-600">
-                        Found {searchResults.length} {searchResults.length === 1 ? 'product' : 'products'}
+                        {searchResults.length === 1
+                            ? "S'ha trobat 1 producte"
+                            : `S'han trobat ${searchResults.length} productes`}
                     </p>
                 </div>
 
@@ -34,9 +36,9 @@ export default function SearchPage() {
                     />
                 ) : (
                     <div className="text-center py-12">
-                        <h2 className="text-xl font-semibold mb-4">No products found</h2>
+                        <h2 className="text-xl font-semibold mb-4">{"No s'ha trobat cap producte"}</h2>
                         <p className="text-gray-600">
-                            Try adjusting your search or browse our categories for what you&apos;re looking for.
+                            {"Prova d'ajustar la cerca o explora les nostres categories per trobar el que busques."}
                         </p>
                     </div>
                 )}

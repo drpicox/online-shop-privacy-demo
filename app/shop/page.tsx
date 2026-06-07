@@ -26,7 +26,7 @@ export default function ShopPage() {
   }, []);
 
   const filteredProducts = products.filter(product =>
-      selectedCategory === "All" ? true : product.category === selectedCategory
+      selectedCategory === "Tots" ? true : product.category === selectedCategory
   );
 
   return (
