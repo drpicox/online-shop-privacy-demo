@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: online-shop-privacy-demo
+    runtime: node
+    plan: free
+    # --include=dev forces devDependencies (typescript, @types, eslint-config-next)
+    # to be installed even if Render sets NODE_ENV=production, since `next build` needs them.
+    buildCommand: npm install --include=dev && npm run build
+    # `npm run start` runs `NODE_ENV=production node server.js`, which serves the
+    # custom Socket.IO server on the $PORT that Render injects.
+    startCommand: npm run start

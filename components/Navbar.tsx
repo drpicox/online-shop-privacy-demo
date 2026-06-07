@@ -19,13 +19,9 @@ export default function Navbar() {
   // Use local state as fallback
   const [localSearchVisible, setLocalSearchVisible] = useState(false);
   
-  // Get the UI state from Redux
-  let reduxSearchVisible = false;
-  try {
-    reduxSearchVisible = useShopSelector((state) => state.ui?.isSearchVisible || false);
-  } catch (error) {
-    console.error('Error reading search visibility from Redux:', error);
-  }
+  // Get the UI state from Redux (the selector already falls back to false
+  // when the ui slice isn't available, so no defensive try/catch is needed).
+  const reduxSearchVisible = useShopSelector((state) => state.ui?.isSearchVisible || false);
   
   // Combine Redux and local state for display
   const isSearchVisible = reduxSearchVisible || localSearchVisible;

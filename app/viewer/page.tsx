@@ -18,18 +18,13 @@ export default function ViewerPage() {
   const [viewMode, setViewMode] = useState<ViewMode>('lastActions');
   const [selectedClientId, setSelectedClientId] = useState<string | undefined>(undefined);
   const [baseUrl, setBaseUrl] = useState<string>('http://localhost:3000');
-  
-  // Use ngrok URL if available
+
+  // Default the QR base URL to wherever the viewer is actually served from.
+  // This auto-configures correctly on Render, ngrok, a LAN IP, or localhost,
+  // since the shop is served from the same origin as the viewer.
+  // The editable field below still lets you override it manually if needed.
   useEffect(() => {
-    import('@/lib/ngrokUrl').then(module => {
-      if (module.NGROK_URL) {
-        setBaseUrl(module.NGROK_URL);
-        console.log('Using ngrok URL for QR code:', module.NGROK_URL);
-      }
-    }).catch(err => {
-      // If there's an error importing (file not found or invalid), ignore it
-      console.log('No ngrok URL configured, using default');
-    });
+    setBaseUrl(window.location.origin);
   }, []);
   
   // Handle tab switching
