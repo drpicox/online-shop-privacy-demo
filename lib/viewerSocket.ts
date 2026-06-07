@@ -1,21 +1,36 @@
 // lib/viewerSocket.ts
 import { io, Socket } from 'socket.io-client';
-import { 
-  addAction, 
-  addClient, 
-  removeClient, 
-  setConnected, 
+import {
+  addAction,
+  addClient,
+  removeClient,
+  setConnected,
   setActiveClients,
   requestClientState,
-  receiveClientState
+  receiveClientState,
+  selectHasClientState
 } from '@/store/viewer';
 import { Store } from '@reduxjs/toolkit';
-import { ViewerRootState } from '@/store/viewer';
+import { ViewerRootState, ClientInfo } from '@/store/viewer';
 import { v4 as uuidv4 } from 'uuid';
 
 // Socket singleton instance
 let socket: Socket | null = null;
 let store: Store | null = null;
+
+// Auto-request a client's full state so it gets visualized in the viewer without
+// anyone having to click "Request State". Without an initial state, the viewer has
+// no baseline to apply incoming actions to, so the client stays invisible.
+// When `force` is false it skips clients we already have state for, which makes it
+// safe to call repeatedly (e.g. as a retry or on every active_clients broadcast).
+const autoRequestClientState = (clientId: string, force = false): void => {
+  if (!clientId || clientId === 'unknown') return;
+  if (!force) {
+    const state = store?.getState() as ViewerRootState | undefined;
+    if (state && selectHasClientState(state, clientId)) return;
+  }
+  requestShopClientState(clientId);
+};
 
 // Initialize socket connection for the viewer
 export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => {
@@ -65,11 +80,18 @@ export const initViewerSocket = (reduxStore: Store<ViewerRootState>): Socket => 
     socket.on('active_clients', (clients) => {
       console.log(`Received ${clients.length} active clients from server`);
       store?.dispatch(setActiveClients(clients));
+      // Pull state for any already-connected client we don't have yet
+      // (covers clients that connected before this viewer was opened).
+      clients.forEach((client: ClientInfo) => autoRequestClientState(client.id));
     });
-    
+
     socket.on('client_connected', (client) => {
       console.log(`Client connected: ${client.name}`);
       store?.dispatch(addClient(client));
+      // Immediately pull the new client's state so it visualizes on its own,
+      // then retry once shortly after in case the shop client wasn't ready yet.
+      autoRequestClientState(client.id, true);
+      setTimeout(() => autoRequestClientState(client.id), 1500);
     });
     
     socket.on('client_disconnected', (clientId) => {
